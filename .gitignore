@@ -1,0 +1,90 @@
+# ==============================================================================
+# Keil MDK-ARM and Keil C51 Intermediate and Output Build Files
+# ==============================================================================
+**/Listings/
+**/Objects/*.obj
+**/Objects/*.lst
+**/Objects/*.m51
+**/Objects/*.abs
+**/Objects/*.omf
+**/Objects/*.lnp
+**/Objects/*.build_log.htm
+**/Objects/*.crf
+**/Objects/*.dep
+**/Objects/*.d
+**/Objects/*.o
+**/Objects/*.axf
+**/Objects/*.htm
+**/Objects/*.sct
+
+*.o
+*.d
+*.crf
+*.axf
+*.map
+*.elf
+*.bin
+*.lst
+*.m51
+*.abs
+*.omf
+*.lnp
+*.build_log.htm
+*.dep
+
+# ==============================================================================
+# Keil User-Specific Settings and Layout Files
+# ==============================================================================
+*.uvgui
+*.uvgui.*
+*.uvguix.*
+*.uvopt
+*.uvoptx
+*.scvd
+
+# ==============================================================================
+# IDE Intermediate Build Directories
+# ==============================================================================
+Debug/
+Release/
+bin/
+obj/
+
+# ==============================================================================
+# Operating System & Editor Temporary Files
+# ==============================================================================
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.bak
+*~
+
+# ==============================================================================
+# Scratch scripts & temporary extraction directories
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+extracted_resources/
+scratch/
+
+# ==============================================================================
+# Local Archive Files (Original assignment resources kept on disk)
+# ==============================================================================
+*.zip
+
+# ==============================================================================
+# Whitelist / Explicitly Retain Essential Source and Configuration Files
+# ==============================================================================
+!*.c
+!*.h
+!*.s
+!*.A51
+!*.ioc
+!*.uvproj
+!*.uvprojx
+!*.json
+!*.svg
+!*.png
+!*.md
