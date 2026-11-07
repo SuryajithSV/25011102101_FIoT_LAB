@@ -29,5 +29,11 @@ int main(void) {
     send_at("AT+CIPMUX=1\r\n", 500);
     send_at("AT+CIPSERVER=1,80\r\n", 500);
 
-    while (1);
+    /* Bridge ESP8266 logs to PC serial console */
+    uint8_t ch;
+    while (1) {
+        if (HAL_UART_Receive(&huart2, &ch, 1, 10) == HAL_OK) {
+            HAL_UART_Transmit(&huart1, &ch, 1, 10);
+        }
+    }
 }

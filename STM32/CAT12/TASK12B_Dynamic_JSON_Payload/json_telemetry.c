@@ -23,8 +23,10 @@ int main(void) {
     MX_GPIO_Init();
     MX_USART2_UART_Init();
 
-    format_sensor_json(t, h, p, json, sizeof(json));
-    HAL_UART_Transmit(&huart2, (uint8_t*)json, strlen(json), HAL_MAX_DELAY);
-
-    while (1);
+    while (1) {
+        format_sensor_json(t, h, p, json, sizeof(json));
+        HAL_UART_Transmit(&huart2, (uint8_t*)json, strlen(json), HAL_MAX_DELAY);
+        HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, HAL_MAX_DELAY);
+        HAL_Delay(1000);
+    }
 }

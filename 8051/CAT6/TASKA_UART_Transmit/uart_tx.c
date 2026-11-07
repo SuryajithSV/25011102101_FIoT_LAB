@@ -32,7 +32,7 @@ void main(void) {
     uart_init();
 
     while (1) {
-        uart_send_string("Hello from 8051\\r\\n");
+        uart_send_string("Hello from 8051\r\n");
         delay_ms(1000);
     }
 }

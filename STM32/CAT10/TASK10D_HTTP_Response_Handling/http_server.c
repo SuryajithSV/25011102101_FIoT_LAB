@@ -51,8 +51,31 @@ int main(void) {
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
 
-    /* Server initialization loop */
+    char rx_buf[128];
+    uint16_t rx_idx = 0;
+    uint8_t ch;
+
+    /* Monitor for incoming +IPD requests from client browser */
     while (1) {
-        /* Monitor for +IPD and call handle_http_request(link_id) */
+        if (HAL_UART_Receive(&huart2, &ch, 1, 100) == HAL_OK) {
+            HAL_UART_Transmit(&huart1, &ch, 1, 10); /* Echo to PC debug console */
+            if (rx_idx < sizeof(rx_buf) - 1) {
+                rx_buf[rx_idx++] = ch;
+                rx_buf[rx_idx] = '\0';
+            }
+            /* Parse +IPD,<link_id>,<len>:GET frame */
+            char *ipd = strstr(rx_buf, "+IPD,");
+            if (ipd != NULL) {
+                int link_id = ipd[5] - '0';
+                if (strstr(ipd, ":GET") != NULL) {
+                    handle_http_request(link_id);
+                    rx_idx = 0;
+                    memset(rx_buf, 0, sizeof(rx_buf));
+                }
+            }
+            if (rx_idx >= sizeof(rx_buf) - 1) {
+                rx_idx = 0;
+            }
+        }
     }
 }

@@ -34,9 +34,9 @@ int main(void) {
 
     while (1) {
         MQTTDataHandler(mqttTopic, mqttData);
-        if (strcmp(mqttData, "LED_ON") == 0) {
+        if (strcmp(mqttData, "LED_ON") == 0 || strcmp(mqttData, "1") == 0) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-        } else if (strcmp(mqttData, "LED_OFF") == 0) {
+        } else if (strcmp(mqttData, "LED_OFF") == 0 || strcmp(mqttData, "0") == 0) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
         }
     }
