@@ -150,8 +150,3 @@ All 38 tasks across 8051 and STM32 platforms have been systematically verified a
   - Complete Bosch Sensortec BME280 I²C sensor driver and telemetry serializer (`CAT12`).
   - Modular `ESPLib` ESP8266 driver for cloud MQTT broker connections (`broker.emqx.io:1883`) and topic pub/sub (`CAT13`).
   - Standalone Node-RED JSON flow configurations ready for import (`CAT10E`, `CAT12C`, `CAT13D`).
-
----
-
-## 7. Submission and Maintenance Note
-A provisional, clean repository structure has been implemented in accordance with university evaluation sheets. When the finalized course structure is provided, folder mappings can be adjusted seamlessly.
