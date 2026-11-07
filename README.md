@@ -1,9 +1,5 @@
 # Internet of Things (IoT) Laboratory Portfolio
 
-[![Target Platforms](https://img.shields.io/badge/Platforms-8051%20%7C%20STM32-blue.svg)](#hardware-platforms)
-[![Toolchains](https://img.shields.io/badge/Toolchains-Keil%20%C2%B5Vision%20%7C%20CubeMX-orange.svg)](#software-toolchains)
-[![Repository Status](https://img.shields.io/badge/Status-Complete%20Repository-success.svg)](#repository-structure)
-
 **Course:** 25CS2741 Fundamentals of Internet of Things + Lab  
 **Institution:** Shiv Nadar University, Chennai — Department of Computer Science & Engineering  
 **Programs Covered:** II Yr / 3rd Sem B.Tech CSE (IoT)  
