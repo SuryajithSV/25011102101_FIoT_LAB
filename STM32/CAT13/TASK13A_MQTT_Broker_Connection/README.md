@@ -1,71 +1,40 @@
-# STM32 MQTT Integration – Task 13A: MQTT Broker Connection Setup
+# CAT 13 - TASK13A: MQTT Broker Connection
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-13 (Week 13)
-- **Experiment Name:** Sensor Interfacing (BME280) – (MQTT) – Node Analytics
-- **Hardware Platform:** STM32 Nucleo + Wemos D1 Mini (ESP8266) + Custom ESPLib Library
-- **Task Number:** TASK 13A — ESP8266 Wi-Fi and MQTT Broker TCP Connection Setup
-
----
+## 1. Experiment Name
+**STM32F401 + ESP8266 Cloud IoT Integration: STM32 ESPLib Cloud MQTT Broker Handshake**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Description |
-|---|---|---|
-| STM32 Board | Master Application Controller | Runs MQTT state machine and ESPLib driver |
-| ESP8266 Modem | Wi-Fi TCP/IP Stack | Connects to WLAN and maintains socket to MQTT broker |
-| MQTT Broker | Cloud Message Broker | `broker.emqx.io` on TCP port `1883` |
-
----
+- 1x STM32 Nucleo-F401RE Board
+- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1)
+- 1x Dedicated 3.3V Power Supply for ESP8266
+- Onboard Nucleo LD2 LED (PA5)
+- Public MQTT Broker: `broker.emqx.io:1883`
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| STM32 Pin | Port Signal | Wemos ESP8266 | Function |
-|---|---|---|---|
-| PA2 | USART2_TX | RX (GPIO3) | Transmit MQTT AT command packets |
-| PA3 | USART2_RX | TX (GPIO1) | Receive MQTT broker packets |
-| GND | 0V | GND | System ground reference |
+| Nucleo Pin | Target Pin | Function |
+|---|---|---|
+| PA2 (USART2 TX) | ESP8266 RXD | Serial AT / MQTT data transmit |
+| PA3 (USART2 RX) | ESP8266 TXD | Serial response receive |
+| PA5 | Onboard LD2 LED | Remote cloud-actuated indicator |
+| +3.3V / GND | ESP8266 Supply | Power (dedicated regulator) |
 
----
-
-## 5. Clock Configuration & MQTT Initialization Parameters
-- **Core Clock:** 84 MHz
-- **USART2 Baud Rate:** 115200 bps
-- **MQTT Settings:**
-  - Broker Host: `broker.emqx.io`
-  - TCP Port: `1883`
-  - Client ID: `MqttID`
-  - Clean Session: `True`
-  - Keep-Alive Interval: `500 seconds`
-
----
+## 5. Clock Configuration
+- System Clock: **84 MHz**
+- USART2: 115200 baud, 8-N-1
+- Keep-Alive Interval: 60 seconds
 
 ## 6. Pseudocode / Code Logic
-```c
-/* USER CODE BEGIN 2 */
-// 1. Initialize the Wi-Fi module on USART2
-ESP8266_Init(StationMode, huart2);
-
-// 2. Connect to local Wi-Fi network
-ESP8266_wifiConnect("MySSID", "MyPassword");
-
-// 3. Connect to MQTT Broker
-ESP8266_portConnect("TCP", "broker.emqx.io", "1883");
-
-// 4. Configure MQTT client connection parameters
-MQTT_InitTypeDef_t mqttSetting;
-mqttSetting.keepAlive = 500;
-mqttSetting.connectFlag = CleanSession;
-mqttSetting.clientID = "MqttID";
-
-MQTT_connectBroker(&mqttSetting);
-```
-
----
+1. Initialize STM32 USART2 and ESP8266 modem via `ESP8266_Init()`.
+2. Connect to local Wi-Fi router: `ESP8266_wifiConnect("SSID", "PASS")`.
+3. Connect to cloud broker: `ESP8266_portConnect("TCP", "broker.emqx.io", "1883")`.
+4. Send MQTT CONNECT handshake: `MQTT_connectBroker(&mqtt_cfg)`.
+5. For TASK13A:
+   - Handle topic publishing (`MQTT_publishTopic`) or subscription callback (`MQTTDataHandler`).
+   - Service periodic timers via `MQTTTimer()`.
 
 ## 7. Inference / Conclusion
-- Successfully initialized the custom-built `ESPLib` modem driver on STM32 USART2.
-- Authenticated and established an active MQTT TCP session with `broker.emqx.io:1883`.
+- Successfully verified STM32 ESPLib Cloud MQTT Broker Handshake using standard MQTT protocols over TCP/IP.
+- Demonstrates true cloud IoT edge-node capability on STM32 microcontrollers.

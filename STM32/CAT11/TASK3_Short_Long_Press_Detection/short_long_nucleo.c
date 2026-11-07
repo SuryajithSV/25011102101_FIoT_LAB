@@ -1,5 +1,8 @@
 #include "main.h"
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+
 int main(void) {
     uint32_t press_time = 0;
     uint8_t pressed = 0;

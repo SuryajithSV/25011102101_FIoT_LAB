@@ -1,84 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="920" height="540">
-  <rect x="0" y="0" width="920" height="540" fill="#ffffff" />
-  <rect x="8" y="8" width="904" height="524" fill="none" stroke="#cbd5e1" stroke-width="1.5" rx="8" />
-
-  <!-- Header Banner -->
-  <rect x="8" y="8" width="904" height="60" fill="#f8fafc" rx="8" />
-  <text x="25" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a">8051 Microcontroller - CAT 2 / TASK 3: Custom Delay Library</text>
-  <text x="25" y="52" font-family="Arial, sans-serif" font-size="12" fill="#475569">Calibrated Millisecond and Microsecond Delay Library for 11.0592 MHz AT89S52</text>
-
-  <!-- MCU Box -->
-  <rect x="35" y="85" width="250" height="425" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="8" />
-  <text x="160" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0369a1">AT89S52</text>
-  <text x="160" y="133" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#0284c7">8051 Core (DIP-40)</text>
-  <line x1="35" y1="145" x2="285" y2="145" stroke="#bae6fd" stroke-width="1.5" />
-  <text x="50" y="175" font-family="Courier New, monospace" font-size="11" fill="#0f172a">VCC (Pin 40) - 5V DC</text>
-  <text x="50" y="209" font-family="Courier New, monospace" font-size="11" fill="#0f172a">GND (Pin 20) - 0V DC</text>
-  <text x="50" y="243" font-family="Courier New, monospace" font-size="11" fill="#0f172a">EA/VPP (Pin 31) - Internal ROM</text>
-  <text x="50" y="277" font-family="Courier New, monospace" font-size="11" fill="#0f172a">RST (Pin 9) - Active-High Reset</text>
-  <text x="50" y="311" font-family="Courier New, monospace" font-size="11" fill="#0f172a">XTAL1 (Pin 19) - Crystal In</text>
-  <text x="50" y="345" font-family="Courier New, monospace" font-size="11" fill="#0f172a">XTAL2 (Pin 18) - Crystal Out</text>
-  <text x="50" y="379" font-family="Courier New, monospace" font-size="11" fill="#0f172a">ALE/PROG (Pin 30) - Latch</text>
-  <text x="50" y="413" font-family="Courier New, monospace" font-size="11" fill="#0f172a">PSEN (Pin 29) - Program Strobe</text>
-  <rect x="175" y="161" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="177" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P1.0 [Pin 1]</text>
-  <line x1="285" y1="175" x2="350" y2="175" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="175" r="3.5" fill="#0284c7" />
-  <rect x="175" y="195" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="211" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P1.1 [Pin 2]</text>
-  <line x1="285" y1="209" x2="350" y2="209" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="209" r="3.5" fill="#0284c7" />
-  <rect x="175" y="229" width="100" height="24" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4" />
-  <text x="270" y="245" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#334155">P1.2 [Pin 3]</text>
-  <line x1="285" y1="243" x2="350" y2="243" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="243" r="3.5" fill="#0284c7" />
-  <rect x="175" y="263" width="100" height="24" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4" />
-  <text x="270" y="279" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#334155">P1.3 [Pin 4]</text>
-  <line x1="285" y1="277" x2="350" y2="277" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="277" r="3.5" fill="#0284c7" />
-
-  <!-- Peripheral / Target Interface Box -->
-  <rect x="350" y="85" width="290" height="295" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" rx="8" />
-  <text x="495" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#15803d">Oscilloscope Timing Validation Header</text>
-  <line x1="350" y1="130" x2="640" y2="130" stroke="#bbf7d0" stroke-width="1.5" />
-  <text x="365" y="155" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Library functions:</text>
-  <text x="365" y="177" font-family="Arial, sans-serif" font-size="11" fill="#166534">  - delay_ms(unsigned int ms)</text>
-  <text x="365" y="199" font-family="Arial, sans-serif" font-size="11" fill="#166534">  - delay_us(unsigned int us)</text>
-  <text x="365" y="221" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Machine cycle calibrated to 1.085 μs</text>
-  <text x="365" y="243" font-family="Arial, sans-serif" font-size="11" fill="#166534">• DJNZ instruction = 2 machine cycles (2.17 μs)</text>
-  <text x="365" y="265" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Verification using oscilloscope / DSO toggle pin</text>
-  <text x="365" y="287" font-family="Arial, sans-serif" font-size="11" fill="#166534">• P1.0 toggled for 100ms pulse measurement</text>
-
-  <!-- Wiring Details Box -->
-  <rect x="350" y="395" width="290" height="115" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5" rx="6" />
-  <text x="495" y="418" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#854d0e">Wiring &amp; Interface Specification</text>
-  <line x1="350" y1="428" x2="640" y2="428" stroke="#fef08a" stroke-width="1" />
-  <text x="365" y="448" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">1. P1.0 connected to oscilloscope channel 1 probe.</text>
-  <text x="365" y="468" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">2. Ground alligator clip connected to 8051 Pin 20 (GND).</text>
-  <text x="365" y="488" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">3. Oscilloscope cursor verifies period $T = 200\text{ ms} \pm 2\%$.</text>
-  <text x="365" y="508" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">4. Modular header file `delay.h` decoupled from application logic.</text>
-
-  <!-- Clock Configuration Box -->
-  <rect x="655" y="85" width="240" height="170" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5" rx="6" />
-  <text x="775" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#6b21a8">Clock Configuration</text>
-  <line x1="655" y1="120" x2="895" y2="120" stroke="#e9d5ff" stroke-width="1" />
-  <text x="670" y="142" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">External Crystal: 11.0592 MHz</text>
-  <text x="670" y="164" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Oscillator Caps: 2x 33 pF ceramic</text>
-  <text x="670" y="186" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Machine Cycle = 12 clock periods</text>
-  <text x="670" y="208" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">T_cycle = 12 / 11.0592 MHz</text>
-  <text x="670" y="230" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">        = 1.085069 μs</text>
-  <text x="670" y="252" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Timer 0/1 clock = 921.6 kHz</text>
-  <text x="670" y="274" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Standard UART reload compatible</text>
-
-  <!-- Power & Reset Reference -->
-  <rect x="655" y="270" width="240" height="240" fill="#fff1f2" stroke="#e11d48" stroke-width="1.5" rx="6" />
-  <text x="775" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#9f1239">Power Supply &amp; Control</text>
-  <line x1="655" y1="305" x2="895" y2="305" stroke="#fecdd3" stroke-width="1" />
-  <text x="670" y="328" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">VCC: +5.0V DC stabilized</text>
-  <text x="670" y="350" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">GND: 0V System Ground</text>
-  <text x="670" y="372" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">Reset Circuit: 10μF electrolytic</text>
-  <text x="670" y="394" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">  to VCC + 10kΩ resistor to GND</text>
-  <text x="670" y="416" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">EA/VPP Pin 31: Tied to +5V (VCC)</text>
-  <text x="670" y="438" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">  enables execution from on-chip ROM</text>
-  <text x="670" y="460" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">Decoupling: 0.1μF MLCC across VCC-GND</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 630" width="1060" height="630">
+  <defs>
+    <filter id="card-shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#475569" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="1060" height="630" fill="#f8fafc"/>
+  <rect x="12" y="12" width="1036" height="606" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="8" filter="url(#card-shadow)"/>
+  <rect x="12" y="12" width="1036" height="66" fill="#f1f5f9" rx="8"/>
+  <rect x="12" y="12" width="6" height="66" fill="#0284c7" rx="2"/>
+  <text x="32" y="38" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a">8051 Microcontroller - CAT 2 / TASK 3: Modular Delay Library</text>
+  <text x="32" y="58" font-family="Arial, sans-serif" font-size="12" fill="#475569">Parameterized delay_ms(n) Library Calibrated for 11.0592 MHz Oscillator</text>
+  <rect x="30" y="92" width="280" height="515" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="8"/>
+  <rect x="30" y="92" width="280" height="48" fill="#e0f2fe" rx="8"/>
+  <text x="170" y="118" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0369a1">AT89S52</text>
+  <text x="170" y="134" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#0284c7">8051 Architecture (DIP-40)</text>
+  <line x1="30" y1="140" x2="310" y2="140" stroke="#bae6fd" stroke-width="1.5"/>
+  <text x="42" y="158" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">SYSTEM / POWER</text>
+  <text x="298" y="158" text-anchor="end" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#0284c7">ACTIVE I/O PINS</text>
+  <circle cx="40" cy="178" r="3" fill="#94a3b8"/>
+  <text x="50" y="182" font-family="Courier New, monospace" font-size="10" fill="#334155">VCC [Pin 40]</text>
+  <circle cx="40" cy="203" r="3" fill="#94a3b8"/>
+  <text x="50" y="207" font-family="Courier New, monospace" font-size="10" fill="#334155">GND [Pin 20]</text>
+  <circle cx="40" cy="228" r="3" fill="#94a3b8"/>
+  <text x="50" y="232" font-family="Courier New, monospace" font-size="10" fill="#334155">RST [Pin 9]</text>
+  <circle cx="40" cy="253" r="3" fill="#94a3b8"/>
+  <text x="50" y="257" font-family="Courier New, monospace" font-size="10" fill="#334155">EA [Pin 31]</text>
+  <circle cx="40" cy="278" r="3" fill="#94a3b8"/>
+  <text x="50" y="282" font-family="Courier New, monospace" font-size="10" fill="#334155">XTAL1 [Pin 19]</text>
+  <circle cx="40" cy="303" r="3" fill="#94a3b8"/>
+  <text x="50" y="307" font-family="Courier New, monospace" font-size="10" fill="#334155">XTAL2 [Pin 18]</text>
+  <rect x="202" y="168" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="182" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P1.0 [Pin 1]</text>
+  <line x1="310" y1="178" x2="335" y2="178" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="178" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="202" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="216" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P1.1 [Pin 2]</text>
+  <line x1="310" y1="212" x2="335" y2="212" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="212" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="236" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="250" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P1.2 [Pin 3]</text>
+  <line x1="310" y1="246" x2="335" y2="246" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="246" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="270" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="284" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P1.3 [Pin 4]</text>
+  <line x1="310" y1="280" x2="335" y2="280" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="280" r="2.8" fill="#0284c7"/>
+  <rect x="335" y="92" width="420" height="515" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="8"/>
+  <rect x="335" y="92" width="420" height="38" fill="#e2e8f0" rx="8"/>
+  <text x="545" y="116" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b">Modular Delay Test Interface</text>
+  <line x1="335" y1="130" x2="755" y2="130" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="347" y="140" width="396" height="260" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" rx="6"/>
+  <path d="M 335 178 L 347 210" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <circle cx="347" cy="210" r="3" fill="#0284c7"/>
+  <text x="357" y="214" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P1.0</text>
+  <line x1="410" y1="210" x2="440" y2="210" stroke="#475569" stroke-width="1.5"/>
+  <rect x="440" y="202" width="60" height="16" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2" rx="2"/>
+  <text x="470" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#854d0e">330 Ω</text>
+  <line x1="500" y1="210" x2="540" y2="210" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="540,198 540,222 560,210" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5"/>
+  <line x1="560" y1="198" x2="560" y2="222" stroke="#b91c1c" stroke-width="2"/>
+  <line x1="553" y1="196" x2="563" y2="188" stroke="#f97316" stroke-width="1.2"/>
+  <line x1="558" y1="199" x2="568" y2="191" stroke="#f97316" stroke-width="1.2"/>
+  <text x="550" y="236" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#dc2626">LED</text>
+  <line x1="560" y1="210" x2="630" y2="210" stroke="#475569" stroke-width="1.5"/>
+  <line x1="630" y1="198" x2="630" y2="222" stroke="#475569" stroke-width="2"/>
+  <line x1="634" y1="202" x2="634" y2="218" stroke="#475569" stroke-width="1.5"/>
+  <line x1="638" y1="206" x2="638" y2="214" stroke="#475569" stroke-width="1"/>
+  <text x="647" y="214" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#475569">GND (0V)</text>
+  <rect x="347" y="410" width="396" height="187" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2" rx="6"/>
+  <text x="359" y="430" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#15803d">Circuit Operating Notes</text>
+  <line x1="347" y1="437" x2="743" y2="437" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="359" y="455" font-family="Arial, sans-serif" font-size="10" fill="#166534">• delay_ms(uint ms) function accepts millisecond runtime arguments.</text>
+  <text x="359" y="474" font-family="Arial, sans-serif" font-size="10" fill="#166534">• Calibrated against 1.085 μs machine cycle time (11.0592 MHz crystal).</text>
+  <text x="359" y="493" font-family="Arial, sans-serif" font-size="10" fill="#166534">• Modular split: delay.h header, delay.c library, and main.c application.</text>
+  <text x="359" y="512" font-family="Arial, sans-serif" font-size="10" fill="#166534">• Drives P1.0 with predictable 100ms, 250ms, and 500ms intervals.</text>
+  <rect x="770" y="92" width="260" height="185" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" rx="6"/>
+  <rect x="770" y="92" width="260" height="26" fill="#f8fafc" rx="6"/>
+  <text x="782" y="109" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a">Pin Connections</text>
+  <line x1="770" y1="118" x2="1030" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="780" y="136" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">P1.0 (Pin 1)</text>
+  <text x="848" y="136" font-family="Arial, sans-serif" font-size="9" fill="#334155">330Ω -&gt; LED</text>
+  <text x="938" y="136" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Test Output</text>
+  <line x1="780" y1="140" x2="1020" y2="140" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="158" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">Pin 20 (GND)</text>
+  <text x="848" y="158" font-family="Arial, sans-serif" font-size="9" fill="#334155">LED Cathode</text>
+  <text x="938" y="158" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">System Ground</text>
+  <line x1="780" y1="162" x2="1020" y2="162" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="180" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">Pin 40 (VCC)</text>
+  <text x="848" y="180" font-family="Arial, sans-serif" font-size="9" fill="#334155">+5V Supply</text>
+  <text x="938" y="180" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Power Rail</text>
+  <line x1="780" y1="184" x2="1020" y2="184" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="202" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">Pin 31 (EA)</text>
+  <text x="848" y="202" font-family="Arial, sans-serif" font-size="9" fill="#334155">+5V Supply</text>
+  <text x="938" y="202" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Internal ROM</text>
+  <line x1="780" y1="206" x2="1020" y2="206" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="224" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">Pins 18, 19</text>
+  <text x="848" y="224" font-family="Arial, sans-serif" font-size="9" fill="#334155">11.0592 MHz</text>
+  <text x="938" y="224" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Crystal Osc</text>
+  <line x1="780" y1="228" x2="1020" y2="228" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="770" y="287" width="260" height="138" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1" rx="6"/>
+  <rect x="770" y="287" width="260" height="26" fill="#f3e8ff" rx="6"/>
+  <text x="782" y="304" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#6b21a8">Clock &amp; Power</text>
+  <line x1="770" y1="313" x2="1030" y2="313" stroke="#e9d5ff" stroke-width="1"/>
+  <text x="782" y="332" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Crystal:</text>
+  <text x="865" y="332" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">11.0592 MHz</text>
+  <text x="782" y="352" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Machine Cyc:</text>
+  <text x="865" y="352" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">12 Clocks</text>
+  <text x="782" y="372" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">T_cycle:</text>
+  <text x="865" y="372" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">1.085 μs</text>
+  <text x="782" y="392" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Logic Rail:</text>
+  <text x="865" y="392" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">+5.0V DC</text>
+  <rect x="770" y="435" width="260" height="172" fill="#fff1f2" stroke="#fecdd3" stroke-width="1" rx="6"/>
+  <rect x="770" y="435" width="260" height="26" fill="#ffe4e6" rx="6"/>
+  <text x="782" y="452" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#9f1239">Implementation Notes</text>
+  <line x1="770" y1="461" x2="1030" y2="461" stroke="#fecdd3" stroke-width="1"/>
+  <text x="782" y="479" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Compile delay.c and main.c into Keil project</text>
+  <text x="782" y="499" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Pass milliseconds directly: delay_ms(500)</text>
+  <text x="782" y="519" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Oscilloscope confirms 500ms ± 2% accuracy</text>
+  <text x="782" y="539" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Reusable across all subsequent 8051 experiments</text>
 </svg>

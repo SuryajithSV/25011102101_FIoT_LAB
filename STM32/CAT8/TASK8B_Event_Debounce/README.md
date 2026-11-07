@@ -1,69 +1,38 @@
-# STM32 GPIO Bring-Up – Task 8B: Event-Based Control with Debouncing
+# CAT 8 - Task 8B: Software Button Debounce
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-8 (Week 7)
-- **Experiment Name:** STM32 GPIO Bring-Up and Switch-Controlled LED
-- **Hardware Platform:** STM32 Blue Pill (STM32F103C8T6) + Push-Button Switch
-- **Task Number:** TASK 8B — Event-Based Toggle Control with Software Contact Debouncing
-
----
+## 1. Experiment Name
+**STM32 GPIO Software Edge Detection & Contact Debounce**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Description |
-|---|---|---|
-| STM32F103C8T6 | Microcontroller | 72 MHz ARM Cortex-M3 Blue Pill board |
-| Tactile Switch | Input Trigger | Momentary push-button on PA0 |
-| User LED | Output State Indicator | Active-LOW LED on PC13 |
-
----
+- 1x STM32 Blue Pill Board (STM32F103C8T6)
+- 1x ST-LINK V2 Programmer
+- 1x Tactile Push-Button Switch on PA0
+- Onboard PC13 User LED
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| Pin Number | MCU Pin | Peripheral | Configuration |
-|---|---|---|---|
-| Pin 2 | PC13 | User LED | GPIO Output Push-Pull |
-| Pin 10 | PA0 | Push-Button | GPIO Input with Internal Pull-Up |
-| Header | GND | Switch Pin 2 | 0V Ground Plane |
-
----
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| PA0 | Tactile Button to GND | Switch input (internal pull-up enabled) |
+| PC13 | Onboard LED | Toggles state once per button press |
+| +3.3V / GND | ST-Link / Power Rails | Operating Power |
 
 ## 5. Clock Configuration
-- **Core Clock:** 72 MHz HSE + PLL.
-- **Debounce Timing:** 50 ms lockout window derived from `HAL_GetTick()`.
-
----
+- System Clock: **72 MHz (HSE + PLL)**
+- SysTick Timer: 1 ms tick timebase for `HAL_Delay()` and `HAL_GetTick()`.
 
 ## 6. Pseudocode / Code Logic
-### Contact Bounce Mitigation:
-Mechanical switches produce noisy transitions lasting 5–20 ms upon contact closure. Without debouncing, a single button press causes the microcontroller to detect dozens of false edges, causing unpredictable LED toggling.
-
-### Algorithm:
-```c
-uint8_t last_button_state = GPIO_PIN_SET;
-
-while (1) {
-    uint8_t current_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
-    
-    /* Detect falling edge (High to Low transition) */
-    if (last_button_state == GPIO_PIN_SET && current_state == GPIO_PIN_RESET) {
-        HAL_Delay(50); /* Debounce settling delay */
-        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_RESET) {
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-            /* Wait until button is released to prevent re-triggering */
-            while (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_RESET);
-            HAL_Delay(20); /* Release debounce */
-        }
-    }
-    last_button_state = current_state;
-}
-```
-
----
+1. Maintain `last_btn_state` variable.
+2. Read `current_btn = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);`
+3. If transition detected (`last == HIGH` and `current == LOW`):
+   - Wait 50 ms debounce delay (`HAL_Delay(50)`).
+   - Re-check pin: if still LOW, toggle PC13 LED (`HAL_GPIO_TogglePin`).
+   - Wait for release: `while(read(PA0) == LOW);`.
+   - Wait 20 ms release debounce.
+4. Update `last_btn_state = current_btn;`
 
 ## 7. Inference / Conclusion
-- Contact bounce on PA0 was completely eliminated using software edge verification and release lockout.
-- Exactly one LED state change was registered per physical button press.
+- Successfully eliminated switch mechanical bounce without needing external RC hardware filters.
+- The LED latches its state cleanly on each distinct press event.

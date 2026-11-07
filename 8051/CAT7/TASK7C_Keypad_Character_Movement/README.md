@@ -1,68 +1,41 @@
-# 8051 LCD Driver – Task 7C: 4x4 Keypad Interactive Character Navigation
+# CAT 7 - Task 7C: 2D Cursor Navigation & Keypad Input
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-7 (Week 6)
-- **Experiment Name:** 16x2 LCD Driver Development and Dynamic Display Control
-- **Hardware Platform:** AT89S52 + 16x2 LCD Module + 4x4 Matrix Keypad
-- **Task Number:** TASK 7C — 4x4 Keypad-Based Interactive Character Movement Across 16x2 Display
-
----
+## 1. Experiment Name
+**8051 Interactive 2D LCD Cursor Navigation & Matrix Keypad Text Editor**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Port Connection |
-|---|---|---|
-| AT89S52 MCU | Core Processor | - |
-| 16x2 Character LCD | Visual 2D Grid | Port 2 (P2.0, P2.2, P2.4-P2.7) |
-| 4x4 Matrix Keypad | Directional Controller | Port 1 (P1.0-P1.7) |
-| 10kΩ Potentiometer | LCD Contrast Control | V0 Pin |
-
----
+- 1x AT89S52 Microcontroller
+- 1x 16x2 LCD Display Module
+- 1x 4x4 Matrix Keypad
+- 11.0592 MHz Crystal & 5V Power Supply
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Port | Function | Device Pin Connection |
+| MCU Pin | Connected To | Function |
 |---|---|---|
-| P1.0 - P1.3 | Keypad Rows (R1-R4) | Keypad Row Pins 1-4 |
-| P1.4 - P1.7 | Keypad Columns (C1-C4) | Keypad Column Pins 5-8 |
-| P2.0 | LCD RS | Pin 4 (RS) |
-| P2.2 | LCD Enable | Pin 6 (EN) |
-| P2.4 - P2.7 | LCD Data (D4-D7) | Pins 11-14 (D4-D7) |
+| P2.0 - P2.7 | 4x4 Matrix Keypad | Keypad scanning interface |
+| P1.0 - P1.6 | 16x2 LCD Display | 4-bit data bus + RS, EN control |
+| Pin 20 (GND) | Keypad & LCD GND | System Ground |
 
----
-
-## 5. Clock Configuration & Directional Keypad Mapping
-- **Crystal Oscillator:** 11.0592 MHz
-- **Navigation Controls:**
-  - **Key `2` ($\uparrow$):** Move UP $\\rightarrow$ `row = 0`
-  - **Key `8` ($\downarrow$):** Move DOWN $\\rightarrow$ `row = 1`
-  - **Key `4` ($\leftarrow$):** Move LEFT $\\rightarrow$ `col = max(0, col - 1)`
-  - **Key `6` ($\rightarrow$):** Move RIGHT $\\rightarrow$ `col = min(15, col + 1)`
-
----
+## 5. Clock Configuration
+- Clock: **11.0592 MHz Crystal**
+- Keypad debounce interval: 30 ms.
 
 ## 6. Pseudocode / Code Logic
-```text
-Initialize row = 0, col = 0
-Display '*' at (row, col)
-
-Loop:
-    key = keypad_scan()
-    If key is valid:
-        Clear previous position: write ' ' at (row, col)
-        If key == 2: row = 0
-        If key == 8: row = 1
-        If key == 4 and col > 0: col = col - 1
-        If key == 6 and col < 15: col = col + 1
-        Write '*' at new (row, col)
-End Loop
-```
-
----
+1. Track cursor position `(row, col)` with `row ∈ {1, 2}` and `col ∈ {0 .. 15}`.
+2. Initialize LCD with blinking cursor enabled (`0x0F`).
+3. In loop:
+   - Scan keypad.
+   - If '4' pressed (Left): decrement `col` (minimum 0).
+   - If '6' pressed (Right): increment `col` (maximum 15).
+   - If '2' pressed (Up): `row = 1`.
+   - If '8' pressed (Down): `row = 2`.
+   - If character key pressed: print character at current `(row, col)` and advance `col`.
+   - Update hardware cursor position using DDRAM base address (`0x80` for row 1, `0xC0` for row 2).
 
 ## 7. Inference / Conclusion
-- Integrated matrix keypad scanning with LCD DDRAM positioning to create an interactive 2D cursor navigation application.
-- Boundary enforcement maintained the cursor strictly within valid LCD screen coordinates.
+- Successfully coordinated simultaneous keypad matrix scanning and 16x2 LCD rendering.
+- Boundary checking ensures the cursor stays within the physical 16x2 display window.
+- Demonstrates a complete embedded user interface architecture with interactive navigation and text entry.

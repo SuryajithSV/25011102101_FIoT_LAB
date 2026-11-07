@@ -1,75 +1,57 @@
-# 8051 LCD Driver – Task 7A: 4-Bit Driver & String Display
+# CAT 7 - Task 7A: HD44780 LCD 4-Bit Driver
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-7 (Week 6)
-- **Experiment Name:** 16x2 LCD Driver Development and Dynamic Display Control
-- **Hardware Platform:** AT89S52 + 16x2 HD44780 Alphanumeric LCD + 10kΩ Potentiometer
-- **Task Number:** TASK 7A — 4-Bit GPIO-Based LCD Driver Initialization and Dual-Row String Display
-
----
+## 1. Experiment Name
+**8051 HD44780 16x2 Character LCD 4-Bit Mode Initialization & Display**
 
 ## 2. Hardware Setup and Components
-| Component | Description | Quantity |
-|---|---|---|
-| AT89S52 MCU | 8051 CPU running at 11.0592 MHz | 1 |
-| 16x2 LCD Module | HD44780-compatible alphanumeric display | 1 |
-| Potentiometer | 10 kΩ linear trim potentiometer (Contrast adjust) | 1 |
-| Current Limiting Resistor | 220 Ω 0.25W (Backlight LED protection) | 1 |
-
----
+- 1x AT89S52 Microcontroller
+- 1x 16x2 Alphanumeric LCD Module (HD44780 compliant)
+- 1x 10 kΩ Trimpot (Contrast adjustment)
+- 11.0592 MHz Crystal Oscillator & 5V Power Supply
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Port Pin | LCD Module Pin | Function |
-|---|---|---|---|
-| Pin 21 | P2.0 | Pin 4 (RS) | Register Select (0 = Command, 1 = Data) |
-| Pin 22 | P2.1 | Pin 5 (RW) | Read/Write (0 = Write, tied to GND) |
-| Pin 23 | P2.2 | Pin 6 (EN) | Enable Strobe (High-to-Low pulse) |
-| Pin 25 | P2.4 | Pin 11 (D4) | Data Bit 4 |
-| Pin 26 | P2.5 | Pin 12 (D5) | Data Bit 5 |
-| Pin 27 | P2.6 | Pin 13 (D6) | Data Bit 6 |
-| Pin 28 | P2.7 | Pin 14 (D7) | Data Bit 7 |
-| - | GND | Pin 1 (VSS) | Ground reference (0V) |
-| - | +5V | Pin 2 (VDD) | +5V Logic supply |
-| - | Pot Wiper | Pin 3 (V0) | Contrast adjustment voltage |
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P2.0 (Pin 21) | LCD RS (Pin 4) | Register Select (0 = Command, 1 = Data) |
+| P2.1 (Pin 22) | LCD RW (Pin 5) | Tied to GND (Write Mode) |
+| P2.2 (Pin 23) | LCD EN (Pin 6) | Enable pulse (latches data on falling edge) |
+| P2.4 - P2.7 | LCD D4 - D7 (Pins 11-14) | 4-bit data bus (transfers high nibble, then low nibble) |
+| - | LCD VO (Pin 3) | Wiper of 10 kΩ pot between 5V and GND (Contrast) |
+| - | LCD VDD / VSS | +5V (Pin 2) / 0V Ground (Pin 1) |
 
----
-
-## 5. Clock Configuration & Command Sequence
-- **Frequency:** 11.0592 MHz ($T_{\\text{cycle}} = 1.085\\mu\\text{s}$)
-- **HD44780 4-bit Initialization Sequence:**
-  1. Wait $> 15\\text{ ms}$ after VCC reaches 4.5V.
-  2. Send `0x02` (Return Home / Initialize 4-bit mode).
-  3. Send `0x28` (Function Set: 4-bit, 2-line, 5x8 font).
-  4. Send `0x0C` (Display ON, cursor OFF, blink OFF).
-  5. Send `0x06` (Entry Mode Set: Increment address, no shift).
-  6. Send `0x01` (Clear Display, delay $> 2\\text{ ms}$).
-
----
+## 5. Clock Configuration
+- Clock: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Timing Delays: 4-bit initialization commands require >4.1 ms delays; standard commands require >40 μs.
 
 ## 6. Pseudocode / Code Logic
-```text
-Function lcd_send_nibble(nibble):
-    P2 = (P2 & 0x0F) | (nibble & 0xF0)
-    EN = 1; delay_us(1); EN = 0; delay_us(100)
+1. 4-bit initialization sequence:
+   - Send `0x33`, `0x32` to force LCD into 4-bit mode.
+   - Send `0x28` (4-bit, 2 lines, 5x8 font).
+   - Send `0x0C` (Display ON, cursor OFF).
+   - Send `0x06` (Entry mode, auto increment cursor).
+   - Send `0x01` (Clear display).
+2. Function `lcd_send_nibble(n)`: Place nibble on P2.4-P2.7, pulse EN high then low.
+3. Function `lcd_write_char(c)`: Send high nibble, then low nibble with `RS = 1`.
+4. Display target strings on Line 1 (`0x80`) and Line 2 (`0xC0`).
 
-Function lcd_cmd(cmd):
-    RS = 0
-    lcd_send_nibble(cmd & 0xF0)
-    lcd_send_nibble((cmd << 4) & 0xF0)
+```c
+#include <reg51.h>
+#include "lcd_4bit.h"
 
-Function lcd_data(data):
-    RS = 1
-    lcd_send_nibble(data & 0xF0)
-    lcd_send_nibble((data << 4) & 0xF0)
+void main(void) {
+    lcd_init();
+    lcd_set_cursor(1, 0);
+    lcd_print("HELLO 8051 LAB");
+    lcd_set_cursor(2, 0);
+    lcd_print("LCD DRIVER OK");
+    while (1);
+}
 ```
 
----
-
 ## 7. Inference / Conclusion
-- 4-bit GPIO communication reduced the required microcontroller I/O pin count from 11 pins (8-bit mode) to only 6 pins.
-- Clean text was successfully presented across both rows of the 16x2 LCD display.
+- Successfully initialized the HD44780 LCD controller in 4-bit mode, saving 4 valuable MCU GPIO pins compared to 8-bit mode.
+- Verified that splitting bytes into high and low nibbles with pulsed EN enables clean, crisp text rendering on both lines.

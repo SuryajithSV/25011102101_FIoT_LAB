@@ -1,97 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="920" height="540">
-  <rect x="0" y="0" width="920" height="540" fill="#ffffff" />
-  <rect x="8" y="8" width="904" height="524" fill="none" stroke="#cbd5e1" stroke-width="1.5" rx="8" />
-
-  <!-- Header Banner -->
-  <rect x="8" y="8" width="904" height="60" fill="#f8fafc" rx="8" />
-  <text x="25" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a">8051 CAT 5 / TASK 3: Stepper Motor Speed &amp; Direction Controller</text>
-  <text x="25" y="52" font-family="Arial, sans-serif" font-size="12" fill="#475569">AT89S52 | ULN2003 Darlington Driver on Port 2 | 4-Phase Unipolar Stepper</text>
-
-  <!-- MCU Box -->
-  <rect x="35" y="85" width="250" height="425" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="8" />
-  <text x="160" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0369a1">AT89S52</text>
-  <text x="160" y="133" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#0284c7">8051 Core (DIP-40)</text>
-  <line x1="35" y1="145" x2="285" y2="145" stroke="#bae6fd" stroke-width="1.5" />
-  <text x="50" y="175" font-family="Courier New, monospace" font-size="11" fill="#0f172a">VCC (Pin 40) - 5V DC</text>
-  <text x="50" y="209" font-family="Courier New, monospace" font-size="11" fill="#0f172a">GND (Pin 20) - 0V DC</text>
-  <text x="50" y="243" font-family="Courier New, monospace" font-size="11" fill="#0f172a">EA/VPP (Pin 31) - Internal ROM</text>
-  <text x="50" y="277" font-family="Courier New, monospace" font-size="11" fill="#0f172a">RST (Pin 9) - Active-High Reset</text>
-  <text x="50" y="311" font-family="Courier New, monospace" font-size="11" fill="#0f172a">XTAL1 (Pin 19) - Crystal In</text>
-  <text x="50" y="345" font-family="Courier New, monospace" font-size="11" fill="#0f172a">XTAL2 (Pin 18) - Crystal Out</text>
-  <text x="50" y="379" font-family="Courier New, monospace" font-size="11" fill="#0f172a">ALE/PROG (Pin 30) - Latch</text>
-  <text x="50" y="413" font-family="Courier New, monospace" font-size="11" fill="#0f172a">PSEN (Pin 29) - Program Strobe</text>
-  <rect x="175" y="161" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="177" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P2.0 (IN1) [Pin 21]</text>
-  <line x1="285" y1="175" x2="350" y2="175" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="175" r="3.5" fill="#0284c7" />
-  <rect x="175" y="195" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="211" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P2.1 (IN2) [Pin 22]</text>
-  <line x1="285" y1="209" x2="350" y2="209" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="209" r="3.5" fill="#0284c7" />
-  <rect x="175" y="229" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="245" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P2.2 (IN3) [Pin 23]</text>
-  <line x1="285" y1="243" x2="350" y2="243" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="243" r="3.5" fill="#0284c7" />
-  <rect x="175" y="263" width="100" height="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" rx="4" />
-  <text x="270" y="279" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#0369a1">P2.3 (IN4) [Pin 24]</text>
-  <line x1="285" y1="277" x2="350" y2="277" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="277" r="3.5" fill="#0284c7" />
-  <rect x="175" y="297" width="100" height="24" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4" />
-  <text x="270" y="313" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#334155">COM Rail [ULN2003]</text>
-  <line x1="285" y1="311" x2="350" y2="311" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="311" r="3.5" fill="#0284c7" />
-  <rect x="175" y="331" width="100" height="24" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4" />
-  <text x="270" y="347" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#334155">VCC (+5V) [Pin 40]</text>
-  <line x1="285" y1="345" x2="350" y2="345" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="345" r="3.5" fill="#0284c7" />
-  <rect x="175" y="365" width="100" height="24" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4" />
-  <text x="270" y="381" text-anchor="end" font-family="Courier New, monospace" font-size="11" font-weight="bold" fill="#334155">GND (0V) [Pin 20]</text>
-  <line x1="285" y1="379" x2="350" y2="379" stroke="#0284c7" stroke-width="2" />
-  <circle cx="285" cy="379" r="3.5" fill="#0284c7" />
-
-  <!-- Peripheral / Target Interface Box -->
-  <rect x="350" y="85" width="290" height="295" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" rx="8" />
-  <text x="495" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#15803d">ULN2003 Driver &amp; Stepper Motor Interface</text>
-  <line x1="350" y1="130" x2="640" y2="130" stroke="#bbf7d0" stroke-width="1.5" />
-  <text x="365" y="155" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Driver: ULN2003A 7-channel Darlington transistor array</text>
-  <text x="365" y="177" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Inputs: IN1-IN4 connected to 8051 P2.0-P2.3</text>
-  <text x="365" y="199" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Outputs: OUT1-OUT4 drive Motor Coils A, B, C, D</text>
-  <text x="365" y="221" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Full-Step 4-Phase Wave Sequence: 1000 -&gt; 0100 -&gt; 0010 -&gt; 0001</text>
-  <text x="365" y="243" font-family="Arial, sans-serif" font-size="11" fill="#166534">• Speed Modes (Timer interval per step):</text>
-  <text x="365" y="265" font-family="Arial, sans-serif" font-size="11" fill="#166534">  - Slow: 100 ms/step (~10 steps/s)</text>
-  <text x="365" y="287" font-family="Arial, sans-serif" font-size="11" fill="#166534">  - Medium: 50 ms/step (~20 steps/s)</text>
-  <text x="365" y="309" font-family="Arial, sans-serif" font-size="11" fill="#166534">  - Fast: 10 ms/step (~100 steps/s)</text>
-
-  <!-- Wiring Details Box -->
-  <rect x="350" y="395" width="290" height="115" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5" rx="6" />
-  <text x="495" y="418" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#854d0e">Wiring &amp; Interface Specification</text>
-  <line x1="350" y1="428" x2="640" y2="428" stroke="#fef08a" stroke-width="1" />
-  <text x="365" y="448" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">1. External +5V to +12V power applied to motor supply and ULN2003 COM.</text>
-  <text x="365" y="468" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">2. Common ground shared between 8051 board and ULN2003.</text>
-  <text x="365" y="488" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">3. Reverse sequence (0001 -&gt; 0010 -&gt; 0100 -&gt; 1000) reverses direction.</text>
-  <text x="365" y="508" font-family="Arial, sans-serif" font-size="10.5" fill="#713f12">4. Flyback clamp diodes inside ULN2003 protect against inductive spikes.</text>
-
-  <!-- Clock Configuration Box -->
-  <rect x="655" y="85" width="240" height="170" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5" rx="6" />
-  <text x="775" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#6b21a8">Clock Configuration</text>
-  <line x1="655" y1="120" x2="895" y2="120" stroke="#e9d5ff" stroke-width="1" />
-  <text x="670" y="142" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">External Crystal: 11.0592 MHz</text>
-  <text x="670" y="164" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Oscillator Caps: 2x 33 pF ceramic</text>
-  <text x="670" y="186" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Machine Cycle = 12 clock periods</text>
-  <text x="670" y="208" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">T_cycle = 12 / 11.0592 MHz</text>
-  <text x="670" y="230" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">        = 1.085069 μs</text>
-  <text x="670" y="252" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Timer 0/1 clock = 921.6 kHz</text>
-  <text x="670" y="274" font-family="Arial, sans-serif" font-size="10.5" fill="#581c87">Standard UART reload compatible</text>
-
-  <!-- Power & Reset Reference -->
-  <rect x="655" y="270" width="240" height="240" fill="#fff1f2" stroke="#e11d48" stroke-width="1.5" rx="6" />
-  <text x="775" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#9f1239">Power Supply &amp; Control</text>
-  <line x1="655" y1="305" x2="895" y2="305" stroke="#fecdd3" stroke-width="1" />
-  <text x="670" y="328" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">VCC: +5.0V DC stabilized</text>
-  <text x="670" y="350" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">GND: 0V System Ground</text>
-  <text x="670" y="372" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">Reset Circuit: 10μF electrolytic</text>
-  <text x="670" y="394" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">  to VCC + 10kΩ resistor to GND</text>
-  <text x="670" y="416" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">EA/VPP Pin 31: Tied to +5V (VCC)</text>
-  <text x="670" y="438" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">  enables execution from on-chip ROM</text>
-  <text x="670" y="460" font-family="Arial, sans-serif" font-size="10.5" fill="#881337">Decoupling: 0.1μF MLCC across VCC-GND</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 630" width="1060" height="630">
+  <defs>
+    <filter id="card-shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#475569" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="1060" height="630" fill="#f8fafc"/>
+  <rect x="12" y="12" width="1036" height="606" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="8" filter="url(#card-shadow)"/>
+  <rect x="12" y="12" width="1036" height="66" fill="#f1f5f9" rx="8"/>
+  <rect x="12" y="12" width="6" height="66" fill="#0284c7" rx="2"/>
+  <text x="32" y="38" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a">8051 Microcontroller - CAT 5 / TASK 3: ULN2003 Stepper Motor Control</text>
+  <text x="32" y="58" font-family="Arial, sans-serif" font-size="12" fill="#475569">4-Phase Unipolar Stepper Motor Drive via ULN2003 Darlington Array</text>
+  <rect x="30" y="92" width="280" height="515" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="8"/>
+  <rect x="30" y="92" width="280" height="48" fill="#e0f2fe" rx="8"/>
+  <text x="170" y="118" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0369a1">AT89S52</text>
+  <text x="170" y="134" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#0284c7">8051 Architecture (DIP-40)</text>
+  <line x1="30" y1="140" x2="310" y2="140" stroke="#bae6fd" stroke-width="1.5"/>
+  <text x="42" y="158" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">SYSTEM / POWER</text>
+  <text x="298" y="158" text-anchor="end" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#0284c7">ACTIVE I/O PINS</text>
+  <circle cx="40" cy="178" r="3" fill="#94a3b8"/>
+  <text x="50" y="182" font-family="Courier New, monospace" font-size="10" fill="#334155">VCC [Pin 40]</text>
+  <circle cx="40" cy="203" r="3" fill="#94a3b8"/>
+  <text x="50" y="207" font-family="Courier New, monospace" font-size="10" fill="#334155">GND [Pin 20]</text>
+  <circle cx="40" cy="228" r="3" fill="#94a3b8"/>
+  <text x="50" y="232" font-family="Courier New, monospace" font-size="10" fill="#334155">RST [Pin 9]</text>
+  <circle cx="40" cy="253" r="3" fill="#94a3b8"/>
+  <text x="50" y="257" font-family="Courier New, monospace" font-size="10" fill="#334155">EA [Pin 31]</text>
+  <circle cx="40" cy="278" r="3" fill="#94a3b8"/>
+  <text x="50" y="282" font-family="Courier New, monospace" font-size="10" fill="#334155">XTAL1 [Pin 19]</text>
+  <circle cx="40" cy="303" r="3" fill="#94a3b8"/>
+  <text x="50" y="307" font-family="Courier New, monospace" font-size="10" fill="#334155">XTAL2 [Pin 18]</text>
+  <rect x="202" y="168" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="182" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P2.0 [Coil A]</text>
+  <line x1="310" y1="178" x2="335" y2="178" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="178" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="202" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="216" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P2.1 [Coil B]</text>
+  <line x1="310" y1="212" x2="335" y2="212" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="212" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="236" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="250" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P2.2 [Coil C]</text>
+  <line x1="310" y1="246" x2="335" y2="246" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="246" r="2.8" fill="#0284c7"/>
+  <rect x="202" y="270" width="98" height="20" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="294" y="284" text-anchor="end" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#0369a1">P2.3 [Coil D]</text>
+  <line x1="310" y1="280" x2="335" y2="280" stroke="#0284c7" stroke-width="1.8"/>
+  <circle cx="310" cy="280" r="2.8" fill="#0284c7"/>
+  <rect x="335" y="92" width="420" height="515" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="8"/>
+  <rect x="335" y="92" width="420" height="38" fill="#e2e8f0" rx="8"/>
+  <text x="545" y="116" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1e293b">ULN2003 Stepper Motor Driver Circuit</text>
+  <line x1="335" y1="130" x2="755" y2="130" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="347" y="140" width="396" height="260" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" rx="6"/>
+  <rect x="565" y="170" width="165" height="155" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8" rx="6"/>
+  <rect x="565" y="170" width="165" height="26" fill="#ffedd5" rx="6"/>
+  <text x="647" y="187" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c2410c">ULN2003 Stepper Driver</text>
+  <text x="573" y="214" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#9a3412">IN1 -> Coil A</text>
+  <text x="722" y="214" text-anchor="end" font-family="Arial, sans-serif" font-size="8.5" fill="#c2410c">P2.0</text>
+  <text x="573" y="236" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#9a3412">IN2 -> Coil B</text>
+  <text x="722" y="236" text-anchor="end" font-family="Arial, sans-serif" font-size="8.5" fill="#c2410c">P2.1</text>
+  <text x="573" y="258" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#9a3412">IN3 -> Coil C</text>
+  <text x="722" y="258" text-anchor="end" font-family="Arial, sans-serif" font-size="8.5" fill="#c2410c">P2.2</text>
+  <text x="573" y="280" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#9a3412">IN4 -> Coil D</text>
+  <text x="722" y="280" text-anchor="end" font-family="Arial, sans-serif" font-size="8.5" fill="#c2410c">P2.3</text>
+  <text x="573" y="302" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#9a3412">+5V / GND</text>
+  <text x="722" y="302" text-anchor="end" font-family="Arial, sans-serif" font-size="8.5" fill="#c2410c">Ext Pwr</text>
+  <rect x="347" y="410" width="396" height="187" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2" rx="6"/>
+  <text x="359" y="430" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#15803d">Circuit Operating Notes</text>
+  <line x1="347" y1="437" x2="743" y2="437" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="359" y="455" font-family="Arial, sans-serif" font-size="10" fill="#166534">• 4x Darlington pairs inside ULN2003 sink coil currents up to 500mA.</text>
+  <text x="359" y="474" font-family="Arial, sans-serif" font-size="10" fill="#166534">• Port 2 outputs (P2.0-P2.3) energize coils in 4-step wave/full-step sequence.</text>
+  <text x="359" y="493" font-family="Arial, sans-serif" font-size="10" fill="#166534">• External +5V power supply powers motor coils (decoupled from MCU VCC).</text>
+  <text x="359" y="512" font-family="Arial, sans-serif" font-size="10" fill="#166534">• Step sequence: 0x09 (A+D) -&gt; 0x0C (A+B) -&gt; 0x06 (B+C) -&gt; 0x03 (C+D).</text>
+  <rect x="770" y="92" width="260" height="185" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" rx="6"/>
+  <rect x="770" y="92" width="260" height="26" fill="#f8fafc" rx="6"/>
+  <text x="782" y="109" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a">Pin Connections</text>
+  <line x1="770" y1="118" x2="1030" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="780" y="136" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">P2.0 (Pin 21)</text>
+  <text x="848" y="136" font-family="Arial, sans-serif" font-size="9" fill="#334155">ULN2003 IN1</text>
+  <text x="938" y="136" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Phase A</text>
+  <line x1="780" y1="140" x2="1020" y2="140" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="158" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">P2.1 (Pin 22)</text>
+  <text x="848" y="158" font-family="Arial, sans-serif" font-size="9" fill="#334155">ULN2003 IN2</text>
+  <text x="938" y="158" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Phase B</text>
+  <line x1="780" y1="162" x2="1020" y2="162" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="180" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">P2.2 (Pin 23)</text>
+  <text x="848" y="180" font-family="Arial, sans-serif" font-size="9" fill="#334155">ULN2003 IN3</text>
+  <text x="938" y="180" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Phase C</text>
+  <line x1="780" y1="184" x2="1020" y2="184" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="202" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">P2.3 (Pin 24)</text>
+  <text x="848" y="202" font-family="Arial, sans-serif" font-size="9" fill="#334155">ULN2003 IN4</text>
+  <text x="938" y="202" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Phase D</text>
+  <line x1="780" y1="206" x2="1020" y2="206" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="224" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">EXT +5V</text>
+  <text x="848" y="224" font-family="Arial, sans-serif" font-size="9" fill="#334155">Motor Common</text>
+  <text x="938" y="224" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Motor Power</text>
+  <line x1="780" y1="228" x2="1020" y2="228" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="780" y="246" font-family="Courier New, monospace" font-size="9" font-weight="bold" fill="#0369a1">Pin 20 (GND)</text>
+  <text x="848" y="246" font-family="Arial, sans-serif" font-size="9" fill="#334155">ULN2003 GND</text>
+  <text x="938" y="246" font-family="Arial, sans-serif" font-size="8.5" fill="#64748b">Common Ground</text>
+  <line x1="780" y1="250" x2="1020" y2="250" stroke="#f1f5f9" stroke-width="1"/>
+  <rect x="770" y="287" width="260" height="138" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1" rx="6"/>
+  <rect x="770" y="287" width="260" height="26" fill="#f3e8ff" rx="6"/>
+  <text x="782" y="304" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#6b21a8">Clock &amp; Power</text>
+  <line x1="770" y1="313" x2="1030" y2="313" stroke="#e9d5ff" stroke-width="1"/>
+  <text x="782" y="332" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Crystal:</text>
+  <text x="865" y="332" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">11.0592 MHz</text>
+  <text x="782" y="352" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Machine Cyc:</text>
+  <text x="865" y="352" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">12 Clocks</text>
+  <text x="782" y="372" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">T_cycle:</text>
+  <text x="865" y="372" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">1.085 μs</text>
+  <text x="782" y="392" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#7e22ce">Logic Rail:</text>
+  <text x="865" y="392" font-family="Courier New, monospace" font-size="9.5" fill="#581c87">+5.0V DC</text>
+  <rect x="770" y="435" width="260" height="172" fill="#fff1f2" stroke="#fecdd3" stroke-width="1" rx="6"/>
+  <rect x="770" y="435" width="260" height="26" fill="#ffe4e6" rx="6"/>
+  <text x="782" y="452" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#9f1239">Implementation Notes</text>
+  <line x1="770" y1="461" x2="1030" y2="461" stroke="#fecdd3" stroke-width="1"/>
+  <text x="782" y="479" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Never power stepper motor directly from 8051 GPIO pins</text>
+  <text x="782" y="499" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Common ground must tie 8051 GND and external +5V PSU GND</text>
+  <text x="782" y="519" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Step delay of 15ms provides smooth torque without slipping</text>
+  <text x="782" y="539" font-family="Arial, sans-serif" font-size="9.5" fill="#881337">• Reversing sequence reverses motor rotation direction</text>
 </svg>

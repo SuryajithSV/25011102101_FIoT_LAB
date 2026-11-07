@@ -1,67 +1,42 @@
-# 8051 Bare-Metal LED Blink
+# CAT 2 - Task 2: Bare-Metal LED Blink
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-2 (Week 2)
-- **Experiment Name:** 8051 Development Board Tool Chain Setup – Development Board – AT89S52
-- **Hardware Platform:** AT89S52 Development Board + Keil µVision C51
-- **Task Number:** TASK 2 : Bare-Metal LED Blink
-
----
+## 1. Experiment Name
+**8051 Bare-Metal GPIO Output & LED Blink**
 
 ## 2. Hardware Setup and Components
-| Component | Value / Part Number | Quantity | Description |
-|---|---|---|---|
-| Microcontroller | AT89S52 | 1 | 8051 8-bit MCU clocked at 11.0592 MHz |
-| Resistor | 330 Ω, 0.25W | 1 | Current limiting resistor for LED protection |
-| LED | 5mm Red diffused | 1 | Output indicator ($V_F \approx 1.8\text{V}, I_F \approx 10\text{mA}$) |
-| Power Source | 5V DC regulated | 1 | Clean DC supply via USB / bench power rail |
-| Connecting Wires | 24 AWG solid core | 3 | Breadboard / development header connections |
-
----
+- 1x AT89S52 8051 Microcontroller
+- 1x 5mm Red LED
+- 1x 330 Ω Current-limiting Resistor
+- 1x 11.0592 MHz Crystal with 2x 33 pF Capacitors
+- +5V DC Power Source & Breadboard
 
 ## 3. Circuit Diagram
-The circuit diagram below shows the direct interfacing of an LED to Port 1 Pin 0 (P1.0) of the AT89S52 microcontroller through a current limiting resistor.
-
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| Pin Number | MCU Identifier | Signal Function | Target Connection |
-|---|---|---|---|
-| Pin 1 | P1.0 | Digital Output | 330 Ω Resistor terminal 1 |
-| - | - | Series Resistor | 330 Ω Resistor terminal 2 to LED Anode (+) |
-| - | - | LED Return | LED Cathode (-) to 8051 Pin 20 (GND) |
-| Pin 40 | VCC | Power Rail | +5.0V DC |
-| Pin 20 | GND | Ground Reference | 0.0V DC |
-| Pin 31 | EA/VPP | Mode Select | Tied to VCC (+5V) |
-| Pin 18, 19 | XTAL1, XTAL2 | Clock Source | 11.0592 MHz Crystal + 2x 33pF caps to GND |
-
----
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P1.0 (Pin 1) | 330 Ω Resistor -> LED Anode | Digital output pin driving LED |
+| Pin 20 (GND) | LED Cathode | 0V Ground return |
+| Pin 40 (VCC) | +5.0V DC | Power supply |
+| Pin 31 (EA) | +5.0V DC | Internal ROM select |
+| Pin 9 (RST) | Reset RC Circuit | Power-on reset |
+| Pins 18, 19 | 11.0592 MHz Crystal | Clock oscillator |
 
 ## 5. Clock Configuration
-- **Crystal Frequency:** 11.0592 MHz
-- **Machine Cycle:** 12 oscillator clock periods = 1.085069 μs
-- **Delay Loop Execution:** Software delay loop constructed using nested decrement loops (`unsigned int i, j`) calibrated to yield approximately 500 ms delay intervals per phase.
-
----
+- Clock Source: **11.0592 MHz Crystal**
+- Machine Cycle: 12 clock cycles ($1.085\ \mu\text{s}$)
+- Software delay loop: Calibrated nested loops producing approximately 500 ms delay intervals.
 
 ## 6. Pseudocode / Code Logic
-### Working Principle:
-Port 1 of the 8051 is a quasi-bidirectional I/O port with internal pull-ups. Setting bit P1.0 to `1` drives the pin HIGH (~5V), sourcing current through the 330 Ω resistor to illuminate the LED. Setting P1.0 to `0` pulls the pin LOW (~0V), extinguishing the LED. The nested delay loop produces the required 1 Hz blink rate (500 ms ON, 500 ms OFF).
+1. Define LED on bit `P1^0`.
+2. Implement delay function using nested `for` loops.
+3. In `main()` loop:
+   - Turn LED ON (`LED = 1`).
+   - Call `delay()`.
+   - Turn LED OFF (`LED = 0`).
+   - Call `delay()`.
 
-### Pseudocode:
-```text
-Initialize P1.0 as output
-Loop forever:
-    Set P1.0 = 1 (Turn LED ON)
-    Call delay(500 ms)
-    Set P1.0 = 0 (Turn LED OFF)
-    Call delay(500 ms)
-End Loop
-```
-
-### Source Code:
 ```c
 #include <reg51.h>
 
@@ -69,15 +44,13 @@ sbit LED = P1^0;
 
 void delay() {
     unsigned int i, j;
-    for(i = 0; i < 500; i++) {
-        for(j = 0; j < 500; j++) {
-            /* Software waste loop */
-        }
+    for (i = 0; i < 500; i++) {
+        for (j = 0; j < 500; j++);
     }
 }
 
 void main() {
-    while(1) {
+    while (1) {
         LED = 1;
         delay();
         LED = 0;
@@ -86,9 +59,7 @@ void main() {
 }
 ```
 
----
-
 ## 7. Inference / Conclusion
-- Direct register manipulation of bit P1.0 on the AT89S52 was successfully demonstrated using Keil C51 `sbit` abstraction.
-- The output voltage measured on P1.0 toggled between 4.88V (HIGH) and 0.08V (LOW).
-- The LED flashed continuously at approximately 1 Hz, confirming correct toolchain compilation, hex downloading, and hardware execution.
+- Successfully toggled Port 1 Pin 0 to blink an external LED at ~1 Hz.
+- Port 1 pins function as quasi-bidirectional outputs; setting `P1.0 = 1` sources current through the 330Ω resistor to light the LED.
+- Keil C51 project compiles cleanly with 0 errors and generates the `.hex` binary for flashing.

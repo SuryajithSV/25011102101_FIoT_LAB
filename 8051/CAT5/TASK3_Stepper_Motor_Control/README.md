@@ -1,72 +1,66 @@
-# 8051 Hardware Timer Timing – Task 3: Stepper Motor Control
+# CAT 5 - Task 3: Stepper Motor Control
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-5 (Week 4)
-- **Experiment Name:** Hardware Timer and Interrupt-Based Timing for LED Fading, Pulse Generation, and Stepper Motor Control
-- **Hardware Platform:** AT89S52 + ULN2003 Darlington Transistor Array + 28BYJ-48 Stepper Motor
-- **Task Number:** TASK 3 — Stepper Motor Speed and Direction Sequence Control
-
----
+## 1. Experiment Name
+**8051 Port 2 Interfacing with ULN2003 Darlington Driver & Stepper Motor**
 
 ## 2. Hardware Setup and Components
-| Component | Part / Value | Function |
-|---|---|---|
-| Microcontroller | AT89S52 (DIP-40) | Phase pulse sequencer @ 11.0592 MHz |
-| Motor Driver IC | ULN2003A Darlington Array | High-current sink driver with clamp diodes |
-| Stepper Motor | 28BYJ-48 5V Unipolar Stepper | 4-phase, 5-wire, 64:1 reduction gear |
-| External Power | 5V DC 1A Power Supply | Dedicated motor driving power rail |
-
----
+- 1x AT89S52 Microcontroller
+- 1x ULN2003 Darlington Transistor Array Board
+- 1x 28BYJ-48 5V Unipolar Stepper Motor
+- External +5V DC 1A Power Supply
+- 11.0592 MHz Crystal Oscillator
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Port Pin | ULN2003 Input | ULN2003 Output | Stepper Motor Coil |
-|---|---|---|---|---|
-| Pin 21 | P2.0 | IN1 | OUT1 | Coil A (Blue wire) |
-| Pin 22 | P2.1 | IN2 | OUT2 | Coil B (Pink wire) |
-| Pin 23 | P2.2 | IN3 | OUT3 | Coil C (Yellow wire) |
-| Pin 24 | P2.3 | IN4 | OUT4 | Coil D (Orange wire) |
-| Pin 20 | GND | Pin 8 (GND) | - | Common 0V Ground |
-| - | Ext 5V | Pin 9 (COM) | - | Motor Red wire (+5V) |
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P2.0 (Pin 21) | ULN2003 IN1 -> Motor Coil A | Phase 1 control |
+| P2.1 (Pin 22) | ULN2003 IN2 -> Motor Coil B | Phase 2 control |
+| P2.2 (Pin 23) | ULN2003 IN3 -> Motor Coil C | Phase 3 control |
+| P2.3 (Pin 24) | ULN2003 IN4 -> Motor Coil D | Phase 4 control |
+| Pin 20 (GND) | ULN2003 GND & Power GND | Common Ground |
+| External +5V | ULN2003 COM & Motor Red wire | Motor coil supply rail |
 
----
-
-## 5. Clock Configuration & Stepping Rates
-- **Oscillator:** 11.0592 MHz
-- **Wave Step Drive Sequence:**
-  - Step 1: `0x01` (`0001_2` $\\rightarrow$ Coil A active)
-  - Step 2: `0x02` (`0010_2` $\\rightarrow$ Coil B active)
-  - Step 3: `0x04` (`0100_2` $\\rightarrow$ Coil C active)
-  - Step 4: `0x08` (`1000_2` $\\rightarrow$ Coil D active)
-- **Speed Profiles (Timer interval between consecutive steps):**
-  - **Slow:** 100 ms/step ($10\\text{ steps/s}$)
-  - **Medium:** 50 ms/step ($20\\text{ steps/s}$)
-  - **Fast:** 10 ms/step ($100\\text{ steps/s}$)
-
----
+## 5. Clock Configuration
+- Clock: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Step Delay: 15 ms between phase transitions for smooth torque.
 
 ## 6. Pseudocode / Code Logic
-```c
-const unsigned char step_seq[4] = {0x08, 0x04, 0x02, 0x01};
-unsigned char step_idx = 0;
+1. Define full-step excitation sequence array: `{0x09, 0x0C, 0x06, 0x03}`.
+2. In loop:
+   - For forward rotation: Step index `0 -> 1 -> 2 -> 3`.
+   - Write step byte to `P2`.
+   - Delay 15 ms.
+   - For reverse rotation: Step index `3 -> 2 -> 1 -> 0`.
 
-void step_forward(void) {
-    step_idx = (step_idx + 1) % 4;
-    P2 = (P2 & 0xF0) | step_seq[step_idx];
+```c
+#include <reg51.h>
+
+code unsigned char step_sequence[4] = {0x09, 0x0C, 0x06, 0x03};
+
+void delay_ms(unsigned int ms) {
+    unsigned int i, j;
+    for (i = 0; i < ms; i++) {
+        for (j = 0; j < 115; j++);
+    }
 }
 
-void step_reverse(void) {
-    step_idx = (step_idx == 0) ? 3 : step_idx - 1;
-    P2 = (P2 & 0xF0) | step_seq[step_idx];
+void main(void) {
+    unsigned char i;
+    while (1) {
+        /* Rotate Forward */
+        for (i = 0; i < 4; i++) {
+            P2 = step_sequence[i];
+            delay_ms(15);
+        }
+    }
 }
 ```
 
----
-
 ## 7. Inference / Conclusion
-- The ULN2003 Darlington driver cleanly decoupled inductive motor load current from MCU GPIOs.
-- Precise non-blocking step commutations were maintained across slow (100 ms), medium (50 ms), and fast (10 ms) rates without stall.
+- Successfully interfaced the AT89S52 with a 4-phase stepper motor via the ULN2003 Darlington driver.
+- The ULN2003 amplifies low-current MCU GPIO signals into the ~200 mA coil currents required to actuate the rotor.
+- Full-step excitation provides robust torque with predictable rotational stepping.

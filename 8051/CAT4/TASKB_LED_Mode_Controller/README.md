@@ -1,61 +1,39 @@
-# 8051 HMI Subsystem – Task B: LED Mode Controller
+# CAT 4 - Task B: Multi-Mode LED Controller
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-4 (Week 3)
-- **Experiment Name:** Human-Machine Interface using Matrix Keypad, LEDs, and Seven-Segment Display
-- **Hardware Platform:** AT89S52 + 4x4 Matrix Keypad + 4x LEDs + 7-Segment Display
-- **Task Number:** TASK B — Keypad-Triggered Multi-Mode LED Function Dispatcher
-
----
+## 1. Experiment Name
+**8051 Push-Button Interactive State Machine & Multi-Mode LED Controller**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Port Connection |
-|---|---|---|
-| AT89S52 Microcontroller | Main System Controller | - |
-| 4x4 Matrix Keypad | Mode Select Input | Port 2 (P2.0-P2.7) |
-| Common Cathode 7-Segment | Visual Feedback Display | Port 0 (P0.0-P0.7) with 1kΩ pull-up |
-| 4x 5mm LEDs | Mode Function Output | Port 1 (P1.0-P1.3) via 330Ω resistors |
-
----
+- 1x AT89S52 Microcontroller
+- 4x LEDs with 330 Ω Resistors
+- 1x Push-Button Switch with 10 kΩ Pull-up Resistor
+- 1x 7-Segment Display with 10 kΩ Resistor SIP Array
+- 11.0592 MHz Crystal Oscillator
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| Pin Number | MCU Pin | Functional Peripheral Connection |
+| MCU Pin | Connected To | Function |
 |---|---|---|
-| Pins 1-4 | P1.0 - P1.3 | LED1 to LED4 Anodes via 330Ω resistors |
-| Pins 21-24 | P2.0 - P2.3 | Keypad Rows (R1-R4) |
-| Pins 25-28 | P2.4 - P2.7 | Keypad Columns (C1-C4) |
-| Pins 32-39 | P0.0 - P0.7 | 7-Segment Display Segments a-g, dp |
-| Pin 20 | GND | System Ground Reference |
-| Pin 40 | VCC | +5V DC Supply Rail |
-
----
+| P3.2 (Pin 12) | Push Button to GND | Mode cycle trigger (Active-LOW) |
+| P1.0 - P1.3 | 4x LEDs with 330 Ω resistors | Pattern animation output |
+| P0.0 - P0.7 | 7-Segment Display | Displays active mode number (1-4) |
+| Pin 20 (GND) | Switch & Cathodes GND | Common 0V |
 
 ## 5. Clock Configuration
-- **Frequency:** 11.0592 MHz ($T_{\\text{cycle}} = 1.085\\mu\\text{s}$)
-- Non-blocking state dispatcher evaluates keypad events periodically during active pattern execution.
+- Clock: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Debounce Period: 50 ms on button press.
 
----
-
-## 6. Functional Requirements and Dispatch Table
-| Key Pressed | Seven-Segment Display | LED Operation Dispatched |
-|---|---|---|
-| 1 | `1` | LED1 ON, others OFF (`0x01`) |
-| 2 | `2` | LED2 ON, others OFF (`0x02`) |
-| 3 | `3` | LED3 ON, others OFF (`0x04`) |
-| 4 | `4` | LED4 ON, others OFF (`0x08`) |
-| 5 | `5` | Running LED Pattern (`0x01` $\\rightarrow$ `0x02` $\\rightarrow$ `0x04` $\\rightarrow$ `0x08`) |
-| 6 | `6` | Alternate LEDs (`1010` $\\leftrightarrow$ `0101`) |
-| 7 | `7` | 4-bit Binary Counter (`0000` to `1111`) |
-| 8 | `8` | All LEDs Blink Synchronously (`1111` $\\leftrightarrow$ `0000`) |
-| 9 | `9` | All LEDs OFF (`0x00`) |
-| 0 | `0` | Reset System (Clear display, LEDs OFF) |
-
----
+## 6. Pseudocode / Code Logic
+1. State variable `mode = 1`.
+2. Continuously check `P3.2`:
+   - If pressed (LOW), wait 50 ms debounce, wait for release, then `mode = (mode % 4) + 1`.
+   - Update 7-segment on `P0` with current `mode`.
+   - Execute single animation frame corresponding to `mode` on `P1`.
 
 ## 7. Inference / Conclusion
-- All 10 functional key-to-mode mappings executed cleanly with immediate visual feedback on the seven-segment display and corresponding LED actions on Port 1.
+- Successfully built an interactive finite-state machine (FSM) cycling 4 animation modes.
+- Software debouncing reliably filters out mechanical contact chatter.
+- Port 1 outputs pattern animations while Port 0 displays the current state number in real time.

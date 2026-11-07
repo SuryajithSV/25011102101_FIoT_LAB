@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
+
+UART_HandleTypeDef huart2;
+
 void format_sensor_json(float temp, float hum, float press, char *output, size_t max_len) {
     snprintf(output, max_len,
              "{\"status\":\"success\",\"temperature\":%.2f,\"humidity\":%.2f,\"pressure\":%.2f}",

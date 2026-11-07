@@ -1,59 +1,58 @@
-# 8051 LED Pattern Controller – Task B: Binary Counter
+# CAT 3 - Task B: 4-Bit Binary Counter
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-3 (Week 2/3)
-- **Experiment Name:** Timer-Based LED Pattern Generator and Button Interrupt Controller
-- **Hardware Platform:** AT89S52 Microcontroller Development Board + 4 LEDs + Push-Button
-- **Task Number:** TASK B — Mode 2: 4-Bit Binary Counter (0 to 15)
-
----
+## 1. Experiment Name
+**8051 Port 1 LED Pattern Controller – Mode 2: Binary Up-Counter**
 
 ## 2. Hardware Setup and Components
-| Component | Specification | Quantity | Function |
-|---|---|---|---|
-| Microcontroller | AT89S52 | 1 | Target 8-bit MCU clocked at 11.0592 MHz |
-| 4-LED Array | 5mm Red LEDs | 4 | Binary digit display ($2^0$ to $2^3$) |
-| Current Limiting Resistors | 330 Ω | 4 | Protection resistors on P1.0 to P1.3 |
-| Push-Button | Tactile momentary | 1 | Mode selection switch on P3.2 |
-
----
+- 1x AT89S52 Microcontroller
+- 4x LEDs (LSB to MSB) with 330 Ω Resistors
+- 11.0592 MHz Crystal Oscillator & 5V Power Supply
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| Pin Number | Port Pin | Binary Weight | Connection |
-|---|---|---|---|
-| Pin 1 | P1.0 | Bit 0 (LSB - $2^0$) | LED1 Anode through 330Ω |
-| Pin 2 | P1.1 | Bit 1 ($2^1$) | LED2 Anode through 330Ω |
-| Pin 3 | P1.2 | Bit 2 ($2^2$) | LED3 Anode through 330Ω |
-| Pin 4 | P1.3 | Bit 3 (MSB - $2^3$) | LED4 Anode through 330Ω |
-| Pin 12 | P3.2 | Switch Input | Tactile Button to GND (10kΩ pull-up) |
-| Pin 20 | GND | Ground Reference | 0V System Ground |
-
----
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P1.0 (Pin 1) | 330 Ω -> LED 0 | Bit 0 (LSB, Weight 1) |
+| P1.1 (Pin 2) | 330 Ω -> LED 1 | Bit 1 (Weight 2) |
+| P1.2 (Pin 3) | 330 Ω -> LED 2 | Bit 2 (Weight 4) |
+| P1.3 (Pin 4) | 330 Ω -> LED 3 | Bit 3 (MSB, Weight 8) |
+| Pin 20 (GND) | Common Cathodes | 0V Ground |
 
 ## 5. Clock Configuration
-- **Crystal Oscillator:** 11.0592 MHz ($T_{\text{cycle}} = 1.085\mu\text{s}$)
-- **Count Interval:** Counter increments every 500 ms through software delay loops.
-
----
+- Oscillator: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Step Delay: 500 ms per count.
 
 ## 6. Pseudocode / Code Logic
-```text
-count = 0
-Loop:
-    Output (P1 & 0xF0) | (count & 0x0F) to P1
-    delay_ms(500)
-    count = (count + 1) modulo 16
-    If button pressed Then advance to Mode 3
-End Loop
+1. Initialize 8-bit counter variable `count = 0`.
+2. In an infinite loop:
+   - Output low nibble to Port 1: `P1 = count & 0x0F`.
+   - Call `delay_ms(500)`.
+   - Increment `count = (count + 1) & 0x0F`.
+
+```c
+#include <reg51.h>
+
+void delay_ms(unsigned int ms) {
+    unsigned int i, j;
+    for (i = 0; i < ms; i++) {
+        for (j = 0; j < 115; j++);
+    }
+}
+
+void main() {
+    unsigned char count = 0;
+    while (1) {
+        P1 = count & 0x0F;
+        delay_ms(500);
+        count = (count + 1) & 0x0F;
+    }
+}
 ```
 
----
-
 ## 7. Inference / Conclusion
-- The 4-bit binary counter correctly iterated through states `0000_2` ($0$) to `1111_2` ($15$) with automatic roll-over to `0000_2`.
-- Direct masking (`P1 = (P1 & 0xF0) | count`) preserved upper port integrity.
+- Successfully verified binary counting on Port 1.
+- The 4 LEDs represent states 0 to 15 in true binary code.
+- Masking with `& 0x0F` ensures upper nibble pins (P1.4-P1.7) are not altered.

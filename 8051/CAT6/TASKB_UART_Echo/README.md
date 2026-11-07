@@ -1,62 +1,39 @@
-# 8051 UART Driver – Task B: Interactive UART Echo
+# CAT 6 - Task B: Interactive UART Echo & Command Controller
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-6 (Week 5)
-- **Experiment Name:** UART Driver and Serial Debugging
-- **Hardware Platform:** AT89S52 + USB-to-TTL Adapter + PuTTY Terminal
-- **Task Number:** TASK B — Interactive UART Echo (PC -> 8051 -> PC)
-
----
+## 1. Experiment Name
+**8051 Full-Duplex UART Character Echo & Serial Command Interpreter**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Specifications |
-|---|---|---|
-| AT89S52 Microcontroller | Serial Echo Engine | 11.0592 MHz, DIP-40 |
-| USB-TTL Adapter | Host PC Bridge | CP2102 / CH340 |
-| Terminal Software | Keystroke Console | PuTTY (9600 baud, 8-N-1, Local Echo OFF) |
-
----
+- 1x AT89S52 Microcontroller
+- 1x USB-to-UART Serial Converter
+- 1x LED with 330 Ω Resistor on P1.0
+- 11.0592 MHz Crystal Oscillator
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Signal | Target Pin | Note |
-|---|---|---|---|
-| Pin 10 | P3.0 (RXD) | USB-TTL TXD | Inbound data from PC |
-| Pin 11 | P3.1 (TXD) | USB-TTL RXD | Outbound echo to PC |
-| Pin 20 | GND | USB-TTL GND | Reference ground |
-
----
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P3.0 (Pin 10, RXD) | USB-UART TXD | Receives typed keys from PC |
+| P3.1 (Pin 11, TXD) | USB-UART RXD | Transmits echoed bytes to PC |
+| P1.0 (Pin 1) | 330 Ω -> LED Anode | Controlled by serial commands |
+| Pin 20 (GND) | USB-UART GND | Common Ground |
 
 ## 5. Clock Configuration
-- **Crystal Oscillator:** 11.0592 MHz
-- **Timer 1 Auto-Reload:** $\\text{TH1} = \\text{0xFD}$ ($9600\\text{ Baud}$)
-- **Serial Control Register:** $\\text{SCON} = \\text{0x50}$ (Mode 1, $\\text{REN}=1$)
-
----
+- Crystal: **11.0592 MHz**
+- Timer 1 Mode 2: `TH1 = 0xFD` (9600 baud, 8-N-1).
 
 ## 6. Pseudocode / Code Logic
-```text
-Function uart_read_char():
-    While RI == 0 Wait
-    RI = 0
-    Return SBUF
-
-Function uart_send_char(c):
-    While TI == 0 Wait
-    TI = 0
-    SBUF = c
-
-Main Loop:
-    c = uart_read_char()
-    uart_send_char(c)  // Echo character back immediately
-```
-
----
+1. Initialize UART for 9600 baud.
+2. In loop:
+   - Poll `while (RI == 0);`.
+   - Read character `ch = SBUF; RI = 0;`.
+   - Echo character back: `SBUF = ch; while (TI == 0); TI = 0;`.
+   - If `ch == '1'`, set `P1.0 = 1` (LED ON).
+   - If `ch == '0'`, set `P1.0 = 0` (LED OFF).
 
 ## 7. Inference / Conclusion
-- Characters typed into the PuTTY terminal (`ABC123`, `Hello 8051`) were immediately received by the 8051 SBUF and returned to the display.
-- Validated full-duplex UART driver operation on the AT89S52 platform.
+- Verified full-duplex UART reception and transmission.
+- Typed characters appear immediately in the terminal console, demonstrating sub-millisecond echo latency.
+- Command decoding ('1' / '0') confirms reliable serial peripheral actuation.

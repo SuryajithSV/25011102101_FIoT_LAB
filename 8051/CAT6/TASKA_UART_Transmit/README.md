@@ -1,76 +1,74 @@
-# 8051 UART Driver – Task A: Transmitter Bring-Up
+# CAT 6 - Task A: UART String Transmitter
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-6 (Week 5)
-- **Experiment Name:** UART Driver and Serial Debugging
-- **Hardware Platform:** AT89S52 + USB-to-TTL Converter + PC Terminal (PuTTY)
-- **Task Number:** TASK A — UART Initialization and Character Transmission ("Hello from 8051")
-
----
+## 1. Experiment Name
+**8051 Hardware UART 9600 Baud Serial String Transmitter**
 
 ## 2. Hardware Setup and Components
-| Component | Specification | Quantity | Description |
-|---|---|---|---|
-| Microcontroller | AT89S52 (DIP-40) | 1 | Target MCU running at 11.0592 MHz |
-| Serial Bridge | CP2102 / CH340 USB-TTL | 1 | Converts 8051 TTL UART to PC USB COM port |
-| Host PC | PuTTY Serial Terminal | 1 | Configured for 9600 baud, 8-N-1 |
-| Jumper Wires | Female-to-Male | 3 | TXD, RXD, and GND connections |
-
----
+- 1x AT89S52 Microcontroller
+- 1x CP2102 / CH340 USB-to-UART Module
+- 1x 11.0592 MHz Crystal (Crucial for exact standard baud rates)
+- PC running Serial Terminal (PuTTY / Tera Term / VS Code)
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Signal Identifier | USB-to-TTL Pin | Direction / Purpose |
-|---|---|---|---|
-| Pin 11 | P3.1 / TXD | RXD | Serial Data Output from 8051 |
-| Pin 10 | P3.0 / RXD | TXD | Serial Data Input to 8051 |
-| Pin 20 | GND | GND | Common Reference Ground |
-| Pin 40 | VCC | +5V (Optional) | Power Rail |
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P3.1 (Pin 11, TXD) | USB-UART RXD | 8051 Serial Data Output |
+| P3.0 (Pin 10, RXD) | USB-UART TXD | 8051 Serial Data Input |
+| Pin 20 (GND) | USB-UART GND | Signal Ground Reference |
 
----
-
-## 5. Clock Configuration and Baud Rate Derivation
-- **Crystal Frequency:** 11.0592 MHz
-- **UART Mode:** Mode 1 (8-bit UART, variable baud via Timer 1).
-- **Timer 1 Mode:** Mode 2 (8-bit auto-reload, `TMOD |= 0x20`).
-- **Baud Rate Equation:**
-  $$\\text{Baud Rate} = \\frac{2^{\\text{SMOD}}}{32} \\times \\frac{f_{\\text{osc}}}{12 \\times (256 - \\text{TH1})}$$
-  For SMOD = 0, $f_{\\text{osc}} = 11.0592\\text{ MHz}$, Target Baud = 9600 bps:
-  $$9600 = \\frac{1}{32} \\times \\frac{11.0592 \\times 10^6}{12 \\times (256 - \\text{TH1})} = \\frac{28800}{256 - \\text{TH1}}$$
-  $$256 - \\text{TH1} = \\frac{28800}{9600} = 3 \\implies \\text{TH1} = 256 - 3 = 253 = \\text{0xFD}$$
-  Therefore: $\\text{TH1} = \\text{0xFD}$. Zero baud rate error!
-
----
+## 5. Clock Configuration
+- Crystal Frequency: **11.0592 MHz**
+- Timer 1: **Mode 2 (8-bit auto-reload)**
+- Baud Rate: **9600 bps**
+- Reload Calculation ($SMOD = 0$):
+  $$TH1 = 256 - \frac{11.0592\text{ MHz}}{384 \times 9600} = 256 - 3 = 253 = \text{0xFD}$$
 
 ## 6. Pseudocode / Code Logic
-```text
-Initialize UART:
-    TMOD = 0x20  // Timer 1 Mode 2 auto-reload
-    TH1 = 0xFD   // 9600 baud
-    SCON = 0x50  // 8-bit UART, REN enabled
-    TR1 = 1      // Start Timer 1
-    TI = 1       // Set TI so first printf/write succeeds
+1. Set `TMOD |= 0x20` (Timer 1 Mode 2).
+2. Set `TH1 = 0xFD` (9600 baud reload).
+3. Set `SCON = 0x50` (Mode 1 8-bit UART, enable receiver).
+4. Set `TR1 = 1` (Start Timer 1).
+5. Function `uart_tx_char(ch)`:
+   - Write `SBUF = ch`.
+   - Poll `while (TI == 0);`.
+   - Clear `TI = 0`.
+6. Function `uart_tx_string(str)`: Send characters until `\0`.
 
-Function uart_send_char(c):
-    While TI == 0 Wait
-    TI = 0
-    SBUF = c
+```c
+#include <reg51.h>
 
-Function uart_send_string(s):
-    While *s != '\0':
-        uart_send_char(*s++)
+void uart_init(void) {
+    TMOD |= 0x20;
+    TH1 = 0xFD;
+    SCON = 0x50;
+    TR1 = 1;
+}
 
-Main Loop:
-    uart_send_string("Hello from 8051\r\n")
-    delay_ms(1000)
+void uart_tx_char(char c) {
+    SBUF = c;
+    while (TI == 0);
+    TI = 0;
+}
+
+void uart_tx_string(const char *str) {
+    while (*str) {
+        uart_tx_char(*str++);
+    }
+}
+
+void main(void) {
+    uart_init();
+    while (1) {
+        uart_tx_string("Hello from AT89S52 8051 UART\r\n");
+        /* delay between messages */
+    }
+}
 ```
 
----
-
 ## 7. Inference / Conclusion
-- The AT89S52 UART transmitter operated reliably at 9600-8-N-1 without character corruption or framing errors.
-- PuTTY serial console consistently displayed "Hello from 8051" at 1-second intervals.
+- Successfully verified hardware UART serial transmission at 9600 baud.
+- The 11.0592 MHz crystal provides exact integer division for standard serial baud rates with zero percent error ($TH1 = 0xFD$).
+- Text strings received cleanly on PC serial terminal without garbled characters.

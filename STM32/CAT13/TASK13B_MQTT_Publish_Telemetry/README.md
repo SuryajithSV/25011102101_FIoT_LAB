@@ -1,53 +1,40 @@
-# STM32 MQTT Integration – Task 13B: Telemetry Publishing
+# CAT 13 - TASK13B: MQTT Telemetry Publisher
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-13 (Week 13)
-- **Experiment Name:** Sensor Interfacing (BME280) – (MQTT) – Node Analytics
-- **Hardware Platform:** STM32 + BME280 + Wemos D1 Mini + MQTT Broker
-- **Task Number:** TASK 13B — MQTT Telemetry Publishing (`stm32/test/data`, QoS 0)
-
----
+## 1. Experiment Name
+**STM32F401 + ESP8266 Cloud IoT Integration: STM32 Periodic MQTT Telemetry Ingestion**
 
 ## 2. Hardware Setup and Components
-| Component | Function |
-|---|---|
-| STM32 MCU | Formats telemetry and transmits MQTT publish packets |
-| ESP8266 Modem | Transmits wireless TCP packets to broker |
-| EMQX Public Broker | Dispatches published messages to all subscribed topics |
-
----
+- 1x STM32 Nucleo-F401RE Board
+- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1)
+- 1x Dedicated 3.3V Power Supply for ESP8266
+- Onboard Nucleo LD2 LED (PA5)
+- Public MQTT Broker: `broker.emqx.io:1883`
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| STM32 Signal | Target | Function |
+| Nucleo Pin | Target Pin | Function |
 |---|---|---|
-| PA2 (USART2_TX) | ESP8266 RX | MQTT Publish outbound data |
-| PA3 (USART2_RX) | ESP8266 TX | Modem status feedback |
+| PA2 (USART2 TX) | ESP8266 RXD | Serial AT / MQTT data transmit |
+| PA3 (USART2 RX) | ESP8266 TXD | Serial response receive |
+| PA5 | Onboard LD2 LED | Remote cloud-actuated indicator |
+| +3.3V / GND | ESP8266 Supply | Power (dedicated regulator) |
 
----
-
-## 5. MQTT Topic & Payload Specifications
-- **Topic Name:** `stm32/test/data`
-- **Quality of Service (QoS):** `QoS0` (At most once delivery)
-- **Sample Payload:** `hello` or formatted JSON sensor data.
-
----
+## 5. Clock Configuration
+- System Clock: **84 MHz**
+- USART2: 115200 baud, 8-N-1
+- Keep-Alive Interval: 60 seconds
 
 ## 6. Pseudocode / Code Logic
-```c
-while (1) {
-    /* Publish telemetry string every 1 second */
-    MQTT_publishTopic("stm32/test/data", "hello", QoS0);
-    HAL_Delay(1000);
-}
-```
-
----
+1. Initialize STM32 USART2 and ESP8266 modem via `ESP8266_Init()`.
+2. Connect to local Wi-Fi router: `ESP8266_wifiConnect("SSID", "PASS")`.
+3. Connect to cloud broker: `ESP8266_portConnect("TCP", "broker.emqx.io", "1883")`.
+4. Send MQTT CONNECT handshake: `MQTT_connectBroker(&mqtt_cfg)`.
+5. For TASK13B:
+   - Handle topic publishing (`MQTT_publishTopic`) or subscription callback (`MQTTDataHandler`).
+   - Service periodic timers via `MQTTTimer()`.
 
 ## 7. Inference / Conclusion
-- Successfully streamed live telemetry over MQTT protocol to `broker.emqx.io`.
-- Verification using MQTTX client confirmed instantaneous receipt on topic `stm32/test/data`.
+- Successfully verified STM32 Periodic MQTT Telemetry Ingestion using standard MQTT protocols over TCP/IP.
+- Demonstrates true cloud IoT edge-node capability on STM32 microcontrollers.

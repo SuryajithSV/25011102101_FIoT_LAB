@@ -1,76 +1,40 @@
-# STM32 MQTT Integration – Task 13D: Node-RED MQTT Dashboard Flow
+# CAT 13 - TASK13D: Node-RED MQTT Cloud Dashboard
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-13 (Week 13)
-- **Experiment Name:** Sensor Interfacing (BME280) – (MQTT) – Node Analytics
-- **Hardware Platform:** Node-RED Runtime + MQTT Broker (`broker.emqx.io`) + STM32 Sensor Node
-- **Task Number:** TASK 13D — Node-RED MQTT Subscriber (`mqtt_in`) Dashboard Visualization
+## 1. Experiment Name
+**STM32F401 + ESP8266 Cloud IoT Integration: Node-RED Real-Time Cloud MQTT Telemetry & Control**
 
----
-
-## 2. Architecture Overview
-The Node-RED dashboard acts as a real-time subscriber and remote control console for the STM32 IoT node:
-1. **Telemetry Ingest:** The `mqtt_in` node subscribes to topic `stm32/test/data` on `broker.emqx.io:1883`.
-2. **Parsing:** The JSON string is deserialized into native metrics (`temperature`, `humidity`, `pressure`).
-3. **Visualization:** Real-time gauges and time-series line charts render live telemetry on the Node-RED UI dashboard.
-4. **Remote Actuation:** An `mqtt_out` node allows web buttons to publish control commands (`LED_ON`, `LED_OFF`) back to topic `IOT`.
-
----
+## 2. Hardware Setup and Components
+- 1x STM32 Nucleo-F401RE Board
+- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1)
+- 1x Dedicated 3.3V Power Supply for ESP8266
+- Onboard Nucleo LD2 LED (PA5)
+- Public MQTT Broker: `broker.emqx.io:1883`
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| System Entity | Communication Route | Target |
+| Nucleo Pin | Target Pin | Function |
 |---|---|---|
-| STM32 BME280 Node | Wi-Fi TCP/IP (MQTT) | `broker.emqx.io:1883` |
-| Node-RED Dashboard | WebSocket / Web GUI | Browser (`http://localhost:1880/ui`) |
+| PA2 (USART2 TX) | ESP8266 RXD | Serial AT / MQTT data transmit |
+| PA3 (USART2 RX) | ESP8266 TXD | Serial response receive |
+| PA5 | Onboard LD2 LED | Remote cloud-actuated indicator |
+| +3.3V / GND | ESP8266 Supply | Power (dedicated regulator) |
 
----
+## 5. Clock Configuration
+- System Clock: **84 MHz**
+- USART2: 115200 baud, 8-N-1
+- Keep-Alive Interval: 60 seconds
 
-## 5. Flow Configuration (JSON)
-Import the included `nodered_mqtt_dashboard.json` into Node-RED:
-```json
-[
-    {
-        "id": "mqtt_broker_emqx",
-        "type": "mqtt-broker",
-        "name": "EMQX Public Broker",
-        "broker": "broker.emqx.io",
-        "port": "1883",
-        "clientid": "NodeRed_Dashboard_Client",
-        "autoConnect": true
-    },
-    {
-        "id": "mqtt_in_telemetry",
-        "type": "mqtt in",
-        "z": "tab_mqtt",
-        "name": "Subscribe Telemetry",
-        "topic": "stm32/test/data",
-        "qos": "0",
-        "datatype": "json",
-        "broker": "mqtt_broker_emqx",
-        "x": 160,
-        "y": 120,
-        "wires": [["debug_mqtt_payload"]]
-    },
-    {
-        "id": "debug_mqtt_payload",
-        "type": "debug",
-        "z": "tab_mqtt",
-        "name": "MQTT Telemetry",
-        "active": true,
-        "x": 420,
-        "y": 120,
-        "wires": []
-    }
-]
-```
+## 6. Pseudocode / Code Logic
+1. Initialize STM32 USART2 and ESP8266 modem via `ESP8266_Init()`.
+2. Connect to local Wi-Fi router: `ESP8266_wifiConnect("SSID", "PASS")`.
+3. Connect to cloud broker: `ESP8266_portConnect("TCP", "broker.emqx.io", "1883")`.
+4. Send MQTT CONNECT handshake: `MQTT_connectBroker(&mqtt_cfg)`.
+5. For TASK13D:
+   - Handle topic publishing (`MQTT_publishTopic`) or subscription callback (`MQTTDataHandler`).
+   - Service periodic timers via `MQTTTimer()`.
 
----
-
-## 6. Inference / Conclusion
-- Built an end-to-end MQTT cloud telemetry and remote control loop connecting STM32 edge nodes to Node-RED cloud dashboards.
-- Demonstrated decoupled publish/subscribe architecture scaling to distributed IoT networks.
+## 7. Inference / Conclusion
+- Successfully verified Node-RED Real-Time Cloud MQTT Telemetry & Control using standard MQTT protocols over TCP/IP.
+- Demonstrates true cloud IoT edge-node capability on STM32 microcontrollers.

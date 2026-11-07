@@ -1,59 +1,39 @@
-# STM32 Wi-Fi Modem – Task 10A: UART AT Communication Bring-Up
+# CAT 10 - TASK10A: ESP8266 Modem Bring-Up
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-10 (Week 9)
-- **Experiment Name:** STM32-Wemos Wi-Fi Modem Interface Using AT Commands
-- **Hardware Platform:** STM32 Board + Wemos D1 Mini (ESP8266 Wi-Fi Modem) + Keil MDK-ARM + PuTTY
-- **Task Number:** TASK 10A — Establish STM32 <-> Wemos UART Communication (`AT` -> `OK`)
-
----
+## 1. Experiment Name
+**STM32F103 + ESP8266 Wi-Fi Module: STM32 USART Bridge & AT Modem Bring-Up**
 
 ## 2. Hardware Setup and Components
-| Component | Function | Specification |
-|---|---|---|
-| STM32 Board | Master Application Controller | NUCLEO-F401RE / STM32F103 |
-| Wi-Fi Modem Module | Network Processor | Wemos D1 Mini (ESP8266-12F, 4MB Flash) |
-| Host PC | Debugging & Console | PuTTY Terminal @ 115200 Baud |
-
----
+- 1x STM32 Blue Pill Board (STM32F103C8T6)
+- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos)
+- 1x Dedicated 3.3V 500mA Power Regulator (AMS1117-3.3)
+- 1x USB-to-UART Adapter for PC Debug Monitor
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| Wemos D1 Mini Pin | STM32 Pin | Signal Purpose |
+| STM32 Pin | Connected To | Function |
 |---|---|---|
-| TX (GPIO1) | RX (PA3 / USART2_RX) | Serial data from Wemos to STM32 |
-| RX (GPIO3) | TX (PA2 / USART2_TX) | Serial data from STM32 to Wemos |
-| GND | GND | Common Reference Ground |
-| 5V / 3.3V | 5V / 3.3V | DC Power Source |
-
----
+| PA2 (USART2 TX) | ESP8266 RXD | Transmit AT commands to ESP8266 |
+| PA3 (USART2 RX) | ESP8266 TXD | Receive responses from ESP8266 |
+| PA9 (USART1 TX) | USB-UART RXD | PC Debug Console output |
+| PA10 (USART1 RX) | USB-UART TXD | PC Debug Console input |
+| +3.3V / GND | ESP8266 VCC / GND | Operating Power (Dedicated supply) |
 
 ## 5. Clock Configuration
-- **STM32 Core Clock:** 84 MHz (Nucleo) or 72 MHz (Blue Pill).
-- **USART2 Baud Rate:** 115200 bps, 8 Data Bits, No Parity, 1 Stop Bit.
-
----
+- System Clock: **72 MHz**
+- USART1 (Debug): 115200 baud, 8-N-1
+- USART2 (Modem): 115200 baud, 8-N-1
 
 ## 6. Pseudocode / Code Logic
-```text
-Initialize USART2 (115200 baud to ESP8266)
-Initialize USART1 / VCP (115200 baud to PC Debug)
-
-Transmit "AT\r\n" to USART2
-Wait for response from USART2
-Forward received characters to PC terminal
-
-Expected Response:
-    AT\r\n
-    OK\r\n
-```
-
----
+1. Initialize USART1 (PC console) and USART2 (ESP8266 modem).
+2. Execute command sequence for TASK10A:
+   - Send AT command string via USART2.
+   - Wait for response (`"OK"`, `"+IPD"`, etc.).
+   - Forward status messages to PC terminal via USART1.
+3. Handle communication state machine and data transfer.
 
 ## 7. Inference / Conclusion
-- Established bidirectional UART communication between STM32 and ESP8266 modem.
-- Received `OK` response to `AT` ping confirming modem readiness.
+- Successfully verified STM32 USART Bridge & AT Modem Bring-Up on STM32 using AT command protocols over hardware USART.
+- Demonstrates embedded Wi-Fi connectivity and TCP/IP networking on resource-constrained microcontrollers.

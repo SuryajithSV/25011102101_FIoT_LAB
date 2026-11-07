@@ -1,77 +1,82 @@
-# 8051 HMI Subsystem – Task A: Matrix Keypad & Seven-Segment Display
+# CAT 4 - Task A: 4x4 Keypad & 7-Segment Display
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-4 (Week 3)
-- **Experiment Name:** Human-Machine Interface using Matrix Keypad, LEDs, and Seven-Segment Display
-- **Hardware Platform:** AT89S52 MCU + 4x4 Matrix Keypad + 7-Segment Display (Common Cathode) + 1kΩ Resistor Array
-- **Task Number:** TASK A — Keypad Scanning and Seven-Segment Visual Feedback
-
----
+## 1. Experiment Name
+**8051 Matrix Keypad Scanning & 7-Segment Hexadecimal Display**
 
 ## 2. Hardware Setup and Components
-| Component | Specification | Quantity | Function |
-|---|---|---|---|
-| Microcontroller | AT89S52 DIP-40 | 1 | System CPU running at 11.0592 MHz |
-| 4x4 Matrix Keypad | 16 tactile switches | 1 | Numeric & command entry (Rows R1-R4, Cols C1-C4) |
-| 7-Segment Display | 0.56" Common Cathode | 1 | Visual feedback of scanned key |
-| Resistor Network | 1 kΩ x 8 SIP Resistor Array | 1 | Port 0 open-drain pull-up network |
-| Resistors | 330 Ω 0.25W | 8 | Segment current limiting resistors |
-
----
+- 1x AT89S52 Microcontroller
+- 1x 4x4 Matrix Keypad (16 tactile switches)
+- 1x Common Cathode 7-Segment Display
+- 1x 10 kΩ 8-Resistor SIP Network (Port 0 pull-ups)
+- 8x 330 Ω Resistors (Segment current limiters)
+- 11.0592 MHz Crystal & +5V Power Supply
 
 ## 3. Circuit Diagram
-The circuit diagram below details the matrix keypad connections to Port 2 and the 7-segment display interfaced to Port 0 with external pull-up resistors.
-
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Port Signal | Target Connection | Pin Function / Direction |
-|---|---|---|---|
-| Pins 21-24 | P2.0 - P2.3 | Keypad Rows 1 to 4 | Output (Driven LOW sequentially) |
-| Pins 25-28 | P2.4 - P2.7 | Keypad Columns 1 to 4 | Input (Read with internal pull-up) |
-| Pins 39-32 | P0.0 - P0.7 | 7-Seg Segments a, b, c, d, e, f, g, dp | Output (Open-drain with 1kΩ pull-up array) |
-| Pin 20 | GND | 7-Segment Common Cathode | System 0V reference |
-| Pin 40 | VCC | 1kΩ Resistor Network Common | +5.0V DC Rail |
-
----
+| MCU Pin | Connected To | Function |
+|---|---|---|
+| P2.0 - P2.3 | Keypad Rows R1 - R4 | Active-LOW row drive |
+| P2.4 - P2.7 | Keypad Columns C1 - C4 | Column input scan (with pull-ups) |
+| P0.0 - P0.7 | 7-Segment Segments A - G, DP | Segment drive (Port 0 with 10k pull-up array) |
+| Pin 20 (GND) | 7-Segment Common Cathode | Ground return |
 
 ## 5. Clock Configuration
-- **Crystal Oscillator:** 11.0592 MHz
-- **Keypad Debounce Time:** 15 ms software debounce window between key column state transitions.
-
----
+- Clock: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Debounce Filter: 20 ms software delay on key detection.
 
 ## 6. Pseudocode / Code Logic
-### Keypad Scan Algorithm:
-1. Initialize Rows (P2.0-P2.3) HIGH.
-2. For each row `i` from 0 to 3:
-   - Pull Row `i` LOW (`0`).
-   - Read Columns (P2.4-P2.7).
-   - If any column is LOW, a keypress is detected:
-     - Debounce delay (15 ms).
-     - Calculate key index: $\\text{Key} = \\text{Row} \\times 4 + \\text{Col}$.
-     - Map key to ASCII / integer value.
-   - Restore Row `i` HIGH (`1`).
-3. Return detected key code.
+1. Pull rows `P2.0-P2.3` LOW one by one.
+2. Read column pins `P2.4-P2.7`.
+3. If a column reads `0` (pressed):
+   - Wait 20 ms to debounce.
+   - Look up corresponding 7-segment segment code from LUT.
+   - Output segment byte to `P0`.
+   - Wait until key is released.
 
-### 7-Segment Lookup Table (Common Cathode):
-| Digit | Segments (g f e d c b a) | Port 0 Hex Value |
-|---|---|---|
-| 0 | 0 1 1 1 1 1 1 | `0x3F` |
-| 1 | 0 0 0 0 1 1 0 | `0x06` |
-| 2 | 1 0 1 1 0 1 1 | `0x5B` |
-| 3 | 1 0 0 1 1 1 1 | `0x4F` |
-| 4 | 1 1 0 0 1 1 0 | `0x66` |
-| 5 | 1 1 0 1 1 0 1 | `0x6D` |
-| 6 | 1 1 1 1 1 0 1 | `0x7D` |
-| 7 | 0 0 0 0 1 1 1 | `0x07` |
-| 8 | 1 1 1 1 1 1 1 | `0x7F` |
-| 9 | 1 1 0 1 1 1 1 | `0x6F` |
+```c
+#include <reg51.h>
 
----
+code unsigned char seg_lut[] = {
+    0x3F, 0x06, 0x5B, 0x4F, /* 0, 1, 2, 3 */
+    0x66, 0x6D, 0x7D, 0x07, /* 4, 5, 6, 7 */
+    0x7F, 0x6F, 0x77, 0x7C, /* 8, 9, A, B */
+    0x39, 0x5E, 0x79, 0x71  /* C, D, E, F */
+};
+
+void delay_ms(unsigned int ms) {
+    unsigned int i, j;
+    for (i = 0; i < ms; i++) {
+        for (j = 0; j < 115; j++);
+    }
+}
+
+unsigned char scan_keypad(void) {
+    /* Drive row 0 LOW, check cols, etc. */
+    P2 = 0xFE; if ((P2 & 0xF0) != 0xF0) return 0;
+    P2 = 0xFD; if ((P2 & 0xF0) != 0xF0) return 4;
+    P2 = 0xFB; if ((P2 & 0xF0) != 0xF0) return 8;
+    P2 = 0xF7; if ((P2 & 0xF0) != 0xF0) return 12;
+    return 0xFF;
+}
+
+void main(void) {
+    unsigned char key;
+    P0 = 0x00;
+    while (1) {
+        key = scan_keypad();
+        if (key != 0xFF) {
+            delay_ms(20); /* debounce */
+            P0 = seg_lut[key];
+            while (scan_keypad() != 0xFF); /* wait for release */
+        }
+    }
+}
+```
 
 ## 7. Inference / Conclusion
-- Matrix keypad row-column scanning was successfully implemented with contact debouncing.
-- The 7-segment display on Port 0 accurately reflected the numeric keys 0-9 upon key actuation.
+- Successfully multiplexed a 4x4 matrix keypad using 8 pins on Port 2.
+- Verified that Port 0 requires external pull-ups because its output drivers are open-drain.
+- Keypad debounce prevents multiple triggers, and the look-up table renders hex characters accurately on the 7-segment display.

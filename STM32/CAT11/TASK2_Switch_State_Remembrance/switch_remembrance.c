@@ -1,5 +1,8 @@
 #include "main.h"
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+
 int main(void) {
     uint8_t led_latch = 0;
     uint8_t prev_switch = GPIO_PIN_SET;

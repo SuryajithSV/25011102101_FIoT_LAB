@@ -1,57 +1,56 @@
-# 8051 LED Pattern Controller – Task D: All-LED Flash
+# CAT 3 - Task D: All-LED Synchronous Flash
 
-## 1. Experiment Details
-- **Experiment Identifier:** CONTINUOUS LAB EVALUATION-3 (Week 2/3)
-- **Experiment Name:** Timer-Based LED Pattern Generator and Button Interrupt Controller
-- **Hardware Platform:** AT89S52 Microcontroller Development Board + 4 LEDs + Push-Button
-- **Task Number:** TASK D — Mode 4: All-LED Flash (1111 <-> 0000)
-
----
+## 1. Experiment Name
+**8051 Port 1 LED Pattern Controller – Mode 4: All-LED Flash**
 
 ## 2. Hardware Setup and Components
-| Component | Description | Quantity |
-|---|---|---|
-| AT89S52 Microcontroller | DIP-40 package clocked at 11.0592 MHz | 1 |
-| 4x Red LEDs | 5mm indicators on P1.0-P1.3 | 4 |
-| 4x 330Ω Resistors | Current limiters | 4 |
-| 1x Push-Button | Mode switch on P3.2 | 1 |
-
----
+- 1x AT89S52 Microcontroller
+- 4x LEDs with 330 Ω Resistors
+- 11.0592 MHz Crystal & +5V Bench Power Supply
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
----
-
 ## 4. Required Pin Connections
-| 8051 Pin | Port | Target Connection |
+| MCU Pin | Connected To | Function |
 |---|---|---|
-| Pin 1-4 | P1.0-P1.3 | 4x LED Anodes via 330Ω resistors |
-| Pin 12 | P3.2 | Push-Button Switch to 0V GND |
-| Pin 20 | GND | Ground Reference (0V) |
-| Pin 40 | VCC | +5.0V DC Rail |
-
----
+| P1.0 - P1.3 (Pins 1-4) | 330 Ω -> 4x LED Anodes | Synchronous 4-bit bus output |
+| Pin 20 (GND) | Common LED Cathodes | System Ground |
+| Pin 40 (VCC) | +5V Rail | Main Supply |
 
 ## 5. Clock Configuration
-- **Oscillator:** 11.0592 MHz Crystal
-- **Flash Frequency:** Approximately 2 Hz (250 ms ON, 250 ms OFF).
-
----
+- Clock: **11.0592 MHz Crystal**
+- Machine Cycle: 1.085 μs
+- Blink Period: 500 ms (250 ms ON, 250 ms OFF = 2 Hz frequency).
 
 ## 6. Pseudocode / Code Logic
-```text
-Loop:
-    P1 = (P1 & 0xF0) | 0x0F  // Turn ALL 4 LEDs ON
-    delay_ms(250)
-    P1 = (P1 & 0xF0) | 0x00  // Turn ALL 4 LEDs OFF
-    delay_ms(250)
-    If button pressed Then wrap around to Mode 1
-End Loop
+1. Loop forever:
+   - Set `P1 = 0x0F` (All 4 LEDs ON).
+   - Delay 250 ms.
+   - Set `P1 = 0x00` (All 4 LEDs OFF).
+   - Delay 250 ms.
+
+```c
+#include <reg51.h>
+
+void delay_ms(unsigned int ms) {
+    unsigned int i, j;
+    for (i = 0; i < ms; i++) {
+        for (j = 0; j < 115; j++);
+    }
+}
+
+void main() {
+    while (1) {
+        P1 = 0x0F;
+        delay_ms(250);
+        P1 = 0x00;
+        delay_ms(250);
+    }
+}
 ```
 
----
-
 ## 7. Inference / Conclusion
-- All 4 LEDs operated in strict synchrony, drawing approximately 40 mA total current well within port sourcing limits.
-- The 4-mode finite state machine loop completed full cycle transitions upon consecutive debounced button presses.
+- Successfully verified synchronous multi-pin switching on Port 1.
+- All 4 LEDs illuminate and extinguish together at 2 Hz without visible phase jitter.
+- Demonstrates simultaneous whole-port write execution in a single machine cycle instruction (`MOV P1, #0Fh`).

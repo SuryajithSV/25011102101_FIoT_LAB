@@ -1,6 +1,10 @@
 #include "main.h"
 #include <string.h>
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART1_UART_Init(void);
+
 UART_HandleTypeDef huart1;
 
 static void uart_send_str(const char *s) {

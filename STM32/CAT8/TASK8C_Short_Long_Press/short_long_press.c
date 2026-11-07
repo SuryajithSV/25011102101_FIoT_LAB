@@ -1,5 +1,8 @@
 #include "main.h"
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+
 typedef enum {
     STATE_TOGGLE = 0,
     STATE_BLINK
