@@ -40,7 +40,7 @@ The laboratory syllabus is structured across two primary computing tiers:
 
 ## 3. Repository Structure
 
-The repository is unified under two core platform directories (`8051` and `STM32`). Every experiment is organized into dedicated task subfolders containing its own standalone `README.md`, embedded vector and raster circuit schematics (`circuit.svg`, `circuit.png`), pin tables, clock configurations, pseudocode, and source code files:
+The repository is unified under two core platform directories (`8051` and `STM32`). Every experiment is organized into dedicated task subfolders containing its own standalone `README.md`, embedded high-resolution circuit schematics (`circuit.png`), pin tables, clock configurations, pseudocode, and source code files:
 
 ```text
 25011102101_FIoT_LAB/
