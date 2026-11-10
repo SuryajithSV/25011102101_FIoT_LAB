@@ -1,13 +1,24 @@
-# Internet of Things (IoT) Laboratory Portfolio
+# Fundamentals of IoT (FIoT) Laboratory Portfolio
 
-**Course:** 25CS2741 Fundamentals of Internet of Things + Lab  
+**Repository:** `25011102101_FIoT_LAB`  
+**Student Name:** Suryajith S V  
+**Registration Number:** 25011102101  
+**Degree & Branch:** B.Tech CSE (IoT - B)  
 **Institution:** Shiv Nadar University, Chennai — Department of Computer Science & Engineering  
-**Programs Covered:** II Yr / 3rd Sem B.Tech CSE (IoT)  
+**Course:** 25CS2741 Fundamentals of Internet of Things + Lab  
 
 ---
 
 ## 1. Overview
 This repository contains the complete experimental implementations, circuit schematics, register configurations, source code, and comprehensive documentation for the Internet of Things (IoT) Laboratory course evaluations. 
+
+### Coursework Adherence & Submission Compliance
+- **Repository Naming:** Named strictly as `25011102101_FIoT_LAB` based on student registration number `25011102101` (last three digits: `101`).
+- **Circuit Diagrams:** Every individual task README includes its own embedded high-resolution SVG and PNG schematic with verified pin connections.
+- **CAT Numbering Structure:** Organizes all experiments according to the Continuous Assessment Test (CAT) evaluation sheets and coursework Hands-on Exercises:
+  - **8051 Architecture:** CAT 2 through CAT 7 (Weeks 2 to 7).
+  - **STM32 Architecture:** CAT 8 through CAT 13 (Weeks 8 to 13).
+  - **CAT 10 Continuation:** Wemos ESP8266 AT modem and HTTP micro-server tasks are unified sequentially as `TASK10A` through `TASK10E` under `STM32/CAT10/`. 
 
 The laboratory syllabus is structured across two primary computing tiers:
 1. **8-bit Classical Embedded Architecture:** AT89S52 (8051 Core) bare-metal register programming, timing loops, peripheral drivers (UART, LCD, Keypad, Stepper Motor), and hardware interrupts using Keil C51.
@@ -32,7 +43,7 @@ The laboratory syllabus is structured across two primary computing tiers:
 The repository is unified under two core platform directories (`8051` and `STM32`). Every experiment is organized into dedicated task subfolders containing its own standalone `README.md`, embedded vector and raster circuit schematics (`circuit.svg`, `circuit.png`), pin tables, clock configurations, pseudocode, and source code files:
 
 ```text
-iotgitrepo/
+25011102101_FIoT_LAB/
 ├── .gitignore
 ├── README.md
 │
