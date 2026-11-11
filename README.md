@@ -10,17 +10,17 @@
 ---
 
 ## 1. Overview
-This repository contains the complete experimental implementations, circuit schematics, register configurations, source code, and comprehensive documentation for the Internet of Things (IoT) Laboratory course evaluations.
+This repository contains my experimental implementations, circuit schematics, source code, and project files for the Fundamentals of IoT laboratory coursework at Shiv Nadar University, Chennai.
 
-The laboratory syllabus is structured across two primary computing tiers:
-1. **8-bit Classical Embedded Architecture:** AT89S52 (8051 Core) bare-metal register programming, timing loops, peripheral drivers (UART, LCD, Keypad, Stepper Motor), and hardware interrupts using Keil C51.
-2. **32-bit High-Performance ARM Architecture:** STMicroelectronics STM32F103C8T6 (Blue Pill Cortex-M3) and STM32F401RET6 (Nucleo-64 Cortex-M4) with STM32CubeMX hardware abstraction layer (HAL), Wi-Fi internet connectivity (ESP8266 / Wemos D1 Mini), environmental sensing (Bosch Sensortec BME280 via I²C), HTTP micro-servers, and cloud MQTT telemetry with Node-RED analytics.
+The coursework spans two embedded hardware computing tiers:
+1. **8-bit Classical Embedded (8051):** Bare-metal register programming on the AT89S52 using Keil C51, covering GPIO operations, hardware timers, software PWM, full-duplex UART, HD44780 LCD drivers, and matrix keypad scanning.
+2. **32-bit ARM Cortex-M (STM32):** Peripheral interfacing with the STM32F103 (Blue Pill) and STM32F401 (Nucleo-64) using STM32CubeMX and HAL, including contact debouncing, serial command interpreters, ESP8266 Wi-Fi AT modems, Bosch BME280 I²C environmental sensing, embedded HTTP servers, and MQTT telemetry to Node-RED.
 
 ---
 
 ## 2. CAT Folders & Task Directory Index
 
-Below is the comprehensive index of all continuous evaluation assignments across both platforms. Every individual task directory contains its own standalone `README.md`, embedded circuit schematic (`circuit.png`), and complete project/source files:
+Below is the index of all continuous evaluation assignments across both platforms. Each task folder contains its standalone `README.md`, circuit schematic (`circuit.png`), and complete project/source files:
 
 ### 8051 Microcontroller Tier (AT89S52)
 
@@ -64,56 +64,20 @@ Below is the comprehensive index of all continuous evaluation assignments across
 
 ---
 
-## 3. Hardware Platforms Summary
+## 3. Hardware Platforms
 
-| Platform Identifier | Target Microcontroller | Architecture | Operating Voltage | Clock Source | Primary Peripherals / Drivers |
+| Platform | Target Microcontroller | Architecture | Operating Voltage | Clock Source | Primary Peripherals / Drivers |
 |---|---|---|---|---|---|
-| **8051 Tier** | Microchip / Atmel AT89S52 | 8-bit 8051 CISC | 5.0V DC | 11.0592 MHz Quartz Crystal | GPIOs, Timers 0/1, UART (9600-8-N-1), HD44780 LCD, 4x4 Keypad, ULN2003 Stepper |
+| **8051** | Atmel AT89S52 | 8-bit CISC | 5.0V DC | 11.0592 MHz Crystal | GPIOs, Timers 0/1, UART (9600-8-N-1), HD44780 LCD, 4x4 Keypad, ULN2003 Stepper |
 | **STM32 Tier 1** | STM32F103C8T6 (Blue Pill) | 32-bit ARM Cortex-M3 | 3.3V DC | 72 MHz (8 MHz HSE + PLL x9) | GPIO (PC13 LED, PA0 Button), USART1, SysTick |
-| **STM32 Tier 2** | STM32F401RET6 (NUCLEO-F401RE) | 32-bit ARM Cortex-M4 with FPU | 3.3V DC | 84 MHz (HSI / HSE + PLL) | GPIO (PA5 LD2, PC13 B1), USART2, I2C1 (BME280), ESP8266 Modem |
-| **Wi-Fi Tier** | Wemos D1 Mini (ESP8266-12F) | 32-bit Tensilica L106 | 3.3V / 5V DC | 80 / 160 MHz | AT Command Interpreter, TCP Server (Port 80), MQTT Client (Port 1883) |
-| **Sensor Tier** | Bosch Sensortec BME280 | I²C Environmental Sensor | 3.3V DC | 100 kHz Standard I²C Bus | Temperature, Barometric Pressure, Relative Humidity |
+| **STM32 Tier 2** | STM32F401RET6 (Nucleo-64) | 32-bit ARM Cortex-M4 with FPU | 3.3V DC | 84 MHz (HSI / HSE + PLL) | GPIO (PA5 LD2, PC13 B1), USART2, I2C1 (BME280), ESP8266 Modem |
+| **Wi-Fi Modem** | Wemos D1 Mini (ESP8266-12F) | 32-bit Tensilica L106 | 3.3V / 5V DC | 80 / 160 MHz | AT Command Interpreter, TCP Server (Port 80), MQTT Client (Port 1883) |
+| **Environmental Sensor** | Bosch Sensortec BME280 | Digital Sensor | 3.3V DC | 100 kHz Standard I²C Bus | Temperature, Barometric Pressure, Relative Humidity |
 
 ---
 
-## 4. University Evaluation Script Compliance Matrix
+## 4. Toolchains & Development Setup
 
-This repository strictly matches the evaluation schema and file check requirements evaluated by the course grading harness:
-
-```text
-============================================================
-Foundations of IoT - Evaluation Report
-Repository: 25011102101_FIoT_LAB
-============================================================
-Platform: 8051
-  - Tasks Discovered: 13 / 13
-  - File Checks per Task:
-      * Keil project (*.uvproj or *.uvprojx)    [PASS]
-      * C source file (*.c)                     [PASS]
-      * STARTUP.A51                             [PASS]
-      * Objects/ folder                         [PASS]
-      * Objects/*.hex                           [PASS]
-      * README.md exists                        [PASS]
-      * circuit.png exists                      [PASS]
-  - 8051 Checks Passed: 78 / 78 (100%)
-
-Platform: STM32
-  - Tasks Discovered: 15 / 15
-  - File Checks per Task:
-      * .ioc file                               [PASS]
-      * .mxproject                              [PASS]
-      * Core/ folder                            [PASS]
-      * Drivers/ folder                         [PASS]
-      * MDK-ARM/ folder                         [PASS]
-      * MDK-ARM/*.uvprojx                       [PASS]
-      * MDK-ARM/startup_*.s                     [PASS]
-      * README.md exists                        [PASS]
-      * circuit.png exists                      [PASS]
-  - STM32 Checks Passed: 120 / 120 (100%)
-============================================================
-Total Tasks Discovered: 28 / 28
-Tasks Passed: 28 / 28 (100.0%)
-Total File Checks Passed: 198 / 198 (100.0%)
-Overall Status: PASSED
-============================================================
-```
+- **Keil µVision C51:** Used for AT89S52 bare-metal development. Open the `.uvproj` file in any task folder to build the project and generate the Intel HEX binary (`Objects/*.hex`) for ISP flash burning.
+- **STM32CubeMX & Keil MDK-ARM (µVision5):** Used for STM32 Cortex-M3 and Cortex-M4 targets. Double-click `.uvprojx` inside each task's `MDK-ARM/` directory to open the firmware project, or open the `.ioc` file in STM32CubeMX to inspect pinout configurations and clock trees.
+- **Node-RED:** Flow environment used for HTTP telemetry ingestion and real-time MQTT dashboard monitoring on `localhost:1880`.
