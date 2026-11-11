@@ -1,7 +1,7 @@
-# ==============================================================================
-# Keil MDK-ARM and Keil C51 Intermediate and Output Build Files
-# ==============================================================================
+# Keil generated listing files
 **/Listings/
+
+# Keil generated object and build files
 **/Objects/*.obj
 **/Objects/*.lst
 **/Objects/*.m51
@@ -11,80 +11,29 @@
 **/Objects/*.build_log.htm
 **/Objects/*.crf
 **/Objects/*.dep
-**/Objects/*.d
-**/Objects/*.o
-**/Objects/*.axf
-**/Objects/*.htm
-**/Objects/*.sct
 
-*.o
-*.d
-*.crf
-*.axf
-*.map
-*.elf
-*.bin
-*.lst
-*.m51
-*.abs
-*.omf
-*.lnp
-*.build_log.htm
-*.dep
+# User-specific Keil settings
+**/*.uvgui
+**/*.uvgui.*
+**/*.uvguix*
+**/*.uvopt
+**/*.uvoptx
 
-# ==============================================================================
-# Keil User-Specific Settings and Layout Files
-# ==============================================================================
-*.uvgui
-*.uvgui.*
-*.uvguix.*
-*.uvopt
-*.uvoptx
-*.scvd
+# Generated intermediate build files
+**/*.axf
+**/*.o
+**/*.d
+**/*.dep
+**/*.map
+**/*.elf
 
-# ==============================================================================
-# IDE Intermediate Build Directories
-# ==============================================================================
-Debug/
-Release/
-bin/
-obj/
+# Generated build directories
+**/Debug/
+**/Release/
 
-# ==============================================================================
-# Operating System & Editor Temporary Files
-# ==============================================================================
+# Operating system files
 Thumbs.db
 Desktop.ini
 .DS_Store
-*.swp
-*.bak
-*~
 
-# ==============================================================================
-# Scratch scripts & temporary extraction directories
-# ==============================================================================
-__pycache__/
-*.py[cod]
-*$py.class
-extracted_resources/
-scratch/
-
-# ==============================================================================
-# Local Archive Files (Original assignment resources kept on disk)
-# ==============================================================================
-*.zip
-
-# ==============================================================================
-# Whitelist / Explicitly Retain Essential Source and Configuration Files
-# ==============================================================================
-!*.c
-!*.h
-!*.s
-!*.A51
-!*.ioc
-!*.uvproj
-!*.uvprojx
-!*.json
-!*.svg
-!*.png
-!*.md
+# Keep .hex firmware files tracked
