@@ -70,6 +70,8 @@ Below is the index of all continuous evaluation assignments across both platform
 | [STM32/CAT13](STM32/CAT13/) | [TASK13B](STM32/CAT13/TASK13B/) | Periodic Sensor Telemetry Publishing | MQTT JSON Formatter, QoS 0 Pub | [README](STM32/CAT13/TASK13B/README.md) |
 | [STM32/CAT13](STM32/CAT13/) | [TASK13C](STM32/CAT13/TASK13C/) | Remote Actuator Command Subscription & LED Control | Topic Subscriber, Dispatch Handler | [README](STM32/CAT13/TASK13C/README.md) |
 | [STM32/CAT13](STM32/CAT13/) | [TASK13D](STM32/CAT13/TASK13D/) | Node-RED Real-Time Cloud MQTT Dashboard & Control | Node-RED (Port 1880), MQTT Telemetry | [README](STM32/CAT13/TASK13D/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14](STM32/CAT14/TASK14/) | Node-RED Cloud Dashboard & End-Sem Project Integration | Node-RED (Port 1880), MQTT Telemetry | [README](STM32/CAT14/TASK14/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14A](STM32/CAT14/TASK14A/) | Node-RED Telemetry Flow Ingestion & Routing Rule Engine | Flow JSON Parser, MQTT Ingest | [README](STM32/CAT14/TASK14A/README.md) |
 
 ---
 
