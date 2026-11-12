@@ -1,36 +1,34 @@
-# CAT 12 - Task 12C: Node-RED Environmental Analytics
+# CAT 12 - Task 12C: Temporal Switch Press Classifier
 
 ## 1. Experiment Name
-**Node-RED Real-Time Environmental Dashboard & Statistical Analytics**
+**STM32F401 Duration-Based Button Press Classifier (<1s Short vs ≥1s Long)**
 
 ## 2. Hardware Setup and Components
-- 1x STM32 Nucleo-F401RE Board with BME280 Sensor
-- Node-RED runtime running on Host PC
-- `node-red-dashboard` package installed
+- 1x STM32 Nucleo-F401RE Board
+- Onboard Blue Push-Button (PC13)
+- Onboard Green LED (PA5)
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
 ## 4. Required Pin Connections
-| Physical Link | Target Port | Function |
+| Nucleo Pin | Connected To | Function |
 |---|---|---|
-| Mini-USB Cable | PC USB / Virtual COM Port | Telemetry Ingestion (115200 baud) |
-| PB8 (SCL) | BME280 SCL | I2C Clock |
-| PB9 (SDA) | BME280 SDA | I2C Data |
+| PC13 | Blue Push-Button B1 | Timing input (Active-LOW) |
+| PA5 | Green User LED LD2 | Mode status indicator |
 
 ## 5. Clock Configuration
-- Clock: **84 MHz**
-- Telemetry ingestion baud rate: 115200 bps.
+- System Clock: **84 MHz**
+- SysTick Timer: 1 ms precision timebase
 
-## 6. Pseudocode / Code Logic & Flow Architecture
-1. **Serial-In Node:** Ingests newline-delimited JSON strings from STM32.
-2. **JSON Parser:** Converts JSON text to native JavaScript object.
-3. **Analytics Function Node:**
-   - Tracks running metrics: $T_{min}, T_{max}, T_{avg}$.
-4. **Dashboard Nodes:**
-   - Temperature & Humidity Gauges.
-   - Historical trendline chart.
+## 6. Pseudocode / Code Logic
+1. Detect falling edge on PC13: record `press_time = HAL_GetTick()`.
+2. Wait while button remains held (`HAL_GPIO_ReadPin() == GPIO_PIN_RESET`).
+3. Upon rising edge: record `release_time = HAL_GetTick()`.
+4. Calculate elapsed duration: `duration = release_time - press_time`.
+5. Classify press duration:
+   - If `duration < 1000` ms: Short press -> toggle LED state once.
+   - If `duration >= 1000` ms: Long press -> trigger rapid alert blink (5 cycles) and lock state.
 
 ## 7. Inference / Conclusion
-- Successfully ingested live embedded telemetry into Node-RED.
-- Proves end-to-end IoT pipeline: physical silicon sensor $\rightarrow$ embedded JSON formatter $\rightarrow$ visual cloud analytics dashboard.
+- Demonstrates temporal input differentiation on a single physical push-button input.
