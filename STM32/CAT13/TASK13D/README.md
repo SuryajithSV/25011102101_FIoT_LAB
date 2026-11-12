@@ -1,14 +1,13 @@
-# CAT 13 - TASK13D: Node-RED MQTT Cloud Dashboard
+# CAT 13 - Task 13D: Node-RED Real-Time Cloud Dashboard
 
 ## 1. Experiment Name
-**STM32F401 + ESP8266 Cloud IoT Integration: Node-RED Real-Time Cloud MQTT Telemetry & Control**
+**Node-RED MQTT Cloud Dashboard for Live Monitoring & Remote Actuation**
 
-## 2. Hardware Setup and Components
-- 1x STM32 Nucleo-F401RE Board
-- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1)
-- 1x Dedicated 3.3V Power Supply for ESP8266
-- Onboard Nucleo LD2 LED (PA5)
-- Public MQTT Broker: `broker.emqx.io:1883`
+## 2. Hardware Setup and Software Tools
+- 1x STM32 Nucleo-F401RE Board with ESP8266 Modem
+- Node-RED running locally on `http://localhost:1880`
+- `node-red-dashboard` UI palette installed
+- EMQX Cloud Broker: `broker.emqx.io:1883`
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
@@ -16,25 +15,29 @@
 ## 4. Required Pin Connections
 | Nucleo Pin | Target Pin | Function |
 |---|---|---|
-| PA2 (USART2 TX) | ESP8266 RXD | Serial AT / MQTT data transmit |
-| PA3 (USART2 RX) | ESP8266 TXD | Serial response receive |
-| PA5 | Onboard LD2 LED | Remote cloud-actuated indicator |
-| +3.3V / GND | ESP8266 Supply | Power (dedicated regulator) |
+| PA2 (USART2 TX) | ESP8266 RXD | Send MQTT telemetry |
+| PA3 (USART2 RX) | ESP8266 TXD | Receive incoming actuation packets |
+| PA5 | Onboard LD2 LED | Controlled hardware indicator |
+| 3.3V / GND | Power Source | Power supply rails |
 
-## 5. Clock Configuration
-- System Clock: **84 MHz**
-- USART2: 115200 baud, 8-N-1
-- Keep-Alive Interval: 60 seconds
+## 5. Node-RED Flow Configuration
+- **MQTT In Node:**
+  - Server: `broker.emqx.io:1883`
+  - Topic: `stm32/sensor/data`
+  - Output: JSON string parsed into `msg.payload.temp` and `msg.payload.humidity`.
+- **UI Dashboard Gauges & Charts:**
+  - Temperature Gauge (0–50 °C)
+  - Humidity Gauge (0–100 %)
+  - Real-time strip chart for historical trends
+- **Dashboard Switch / Button:**
+  - On toggle: sends `"ON"` or `"OFF"`
+  - Routed to **MQTT Out Node** publishing to topic `stm32/actuator/led`.
 
-## 6. Pseudocode / Code Logic
-1. Initialize STM32 USART2 and ESP8266 modem via `ESP8266_Init()`.
-2. Connect to local Wi-Fi router: `ESP8266_wifiConnect("SSID", "PASS")`.
-3. Connect to cloud broker: `ESP8266_portConnect("TCP", "broker.emqx.io", "1883")`.
-4. Send MQTT CONNECT handshake: `MQTT_connectBroker(&mqtt_cfg)`.
-5. For TASK13D:
-   - Handle topic publishing (`MQTT_publishTopic`) or subscription callback (`MQTTDataHandler`).
-   - Service periodic timers via `MQTTTimer()`.
+## 6. Flow File
+The complete exported flow configuration is included in this folder:
+- [nodered_mqtt_dashboard.json](nodered_mqtt_dashboard.json)
 
 ## 7. Inference / Conclusion
-- Successfully verified Node-RED Real-Time Cloud MQTT Telemetry & Control using standard MQTT protocols over TCP/IP.
-- Demonstrates true cloud IoT edge-node capability on STM32 microcontrollers.
+- Verified bidirectional cloud integration between the STM32 hardware and Node-RED.
+- Live temperature and humidity updates render continuously on the browser UI at `http://localhost:1880/ui`.
+- Flipping the switch in the web dashboard instantly toggles the physical LED on the STM32 board.

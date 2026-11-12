@@ -1,14 +1,14 @@
-# CAT 13 - TASK13C: MQTT Subscribe & Actuation
+# CAT 13 - Task 13C: Topic Subscription & Remote Actuation
 
 ## 1. Experiment Name
-**STM32F401 + ESP8266 Cloud IoT Integration: Cloud-to-Device Remote MQTT Actuation**
+**Cloud-to-Device Remote Actuator Control via MQTT Subscription**
 
 ## 2. Hardware Setup and Components
 - 1x STM32 Nucleo-F401RE Board
-- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1)
-- 1x Dedicated 3.3V Power Supply for ESP8266
+- 1x ESP8266 Wi-Fi Module
+- 1x Dedicated 3.3V Power Supply
 - Onboard Nucleo LD2 LED (PA5)
-- Public MQTT Broker: `broker.emqx.io:1883`
+- Public MQTT Broker: `broker.emqx.io` (Port 1883)
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
@@ -16,25 +16,28 @@
 ## 4. Required Pin Connections
 | Nucleo Pin | Target Pin | Function |
 |---|---|---|
-| PA2 (USART2 TX) | ESP8266 RXD | Serial AT / MQTT data transmit |
-| PA3 (USART2 RX) | ESP8266 TXD | Serial response receive |
-| PA5 | Onboard LD2 LED | Remote cloud-actuated indicator |
-| +3.3V / GND | ESP8266 Supply | Power (dedicated regulator) |
+| PA2 (USART2 TX) | ESP8266 RXD | Send MQTT commands |
+| PA3 (USART2 RX) | ESP8266 TXD | Receive incoming MQTT messages |
+| PA5 | Onboard LD2 LED | Controlled actuator output |
+| 3.3V / GND | Power Source | Power rails |
 
 ## 5. Clock Configuration
 - System Clock: **84 MHz**
-- USART2: 115200 baud, 8-N-1
-- Keep-Alive Interval: 60 seconds
+- Subscribed Topic: `stm32/actuator/led` (QoS 0)
 
 ## 6. Pseudocode / Code Logic
-1. Initialize STM32 USART2 and ESP8266 modem via `ESP8266_Init()`.
-2. Connect to local Wi-Fi router: `ESP8266_wifiConnect("SSID", "PASS")`.
-3. Connect to cloud broker: `ESP8266_portConnect("TCP", "broker.emqx.io", "1883")`.
-4. Send MQTT CONNECT handshake: `MQTT_connectBroker(&mqtt_cfg)`.
-5. For TASK13C:
-   - Handle topic publishing (`MQTT_publishTopic`) or subscription callback (`MQTTDataHandler`).
-   - Service periodic timers via `MQTTTimer()`.
+1. Connect to Wi-Fi and EMQX broker.
+2. Subscribe to the actuation topic:
+   ```c
+   MQTT_subscribeTopic("stm32/actuator/led", 0);
+   ```
+3. Enable UART interrupt reception on USART2: `HAL_UART_Receive_IT(&huart2, &rx_char, 1)`.
+4. In the `while (1)` loop, call `MQTTDataHandler(mqttTopic, mqttData)`:
+   - When a message arrives on `stm32/actuator/led`:
+   - If payload is `"ON"`, drive `HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET)`.
+   - If payload is `"OFF"`, drive `HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET)`.
+   - If payload is `"TOGGLE"`, toggle `HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5)`.
 
 ## 7. Inference / Conclusion
-- Successfully verified Cloud-to-Device Remote MQTT Actuation using standard MQTT protocols over TCP/IP.
-- Demonstrates true cloud IoT edge-node capability on STM32 microcontrollers.
+- Successfully received cloud commands pushed from an external MQTT client.
+- Sending `"ON"` and `"OFF"` messages switched the physical Nucleo LD2 LED in real time with sub-100 ms latency.

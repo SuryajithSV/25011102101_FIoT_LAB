@@ -1,12 +1,13 @@
-# CAT 5 - Task 2A: Software PWM LED Fading
+# CAT 5 - Task 2C: Timer-Driven Calibrated PWM Waveform
 
 ## 1. Experiment Name
-**8051 Software Pulse Width Modulation (PWM) & LED Brightness Control**
+**8051 Hardware Timer 0 Interrupt-Driven PWM Duty Cycle Controller**
 
 ## 2. Hardware Setup and Components
-- 1x AT89S52 Microcontroller
-- 1x 5mm High-Efficiency LED with 330 Ω Resistor
-- 11.0592 MHz Crystal & 5V Power Supply
+- 1x AT89S52 Microcontroller (DIP-40)
+- 1x 5mm LED with 330 Ω Resistor on P1.0
+- 11.0592 MHz Crystal Oscillator with two 33 pF Capacitors
+- +5V DC Regulated Power Supply
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
@@ -14,23 +15,24 @@
 ## 4. Required Pin Connections
 | MCU Pin | Connected To | Function |
 |---|---|---|
-| P1.0 (Pin 1) | 330 Ω -> LED Anode | PWM modulated output |
-| Pin 20 (GND) | LED Cathode | System Ground |
+| P1.0 (Pin 1) | 330 Ω Resistor -> LED Anode | PWM Output |
+| Pin 20 (GND) | LED Cathode | Ground (0V) |
+| Pin 40 (VCC) | +5V Rail | Supply |
+| Pin 31 (EA) | +5V Rail | Internal Flash ROM |
 
 ## 5. Clock Configuration
-- Clock: **11.0592 MHz Crystal**
-- Machine Cycle: 1.085 μs
-- PWM Base Frequency: ~200 Hz (5 ms period) to prevent visual flicker.
+- Crystal Frequency: **11.0592 MHz**
+- Timer 0 Mode 1 (16-bit Timer): Reload value `0xFFA4` gives a 100 µs interrupt period.
+- PWM Frequency: 20 ticks of 100 µs = 2.0 ms period (~500 Hz).
 
 ## 6. Pseudocode / Code Logic
-1. Divide PWM period into 100 duty cycle steps.
-2. Maintain `duty` variable from 0 to 100.
-3. For each PWM cycle:
-   - Turn LED ON for `duty` time slices.
-   - Turn LED OFF for `(100 - duty)` time slices.
-4. Increment `duty` from 0 to 100, then decrement from 100 to 0.
+1. Configure Timer 0 in Mode 1 (`TMOD = 0x01`).
+2. Reload `TH0 = 0xFF` and `TL0 = 0xA4` inside the ISR for a 100 µs timebase.
+3. Keep a 20-step tick counter:
+   - If `pwm_tick < duty`, drive `LED = 1`.
+   - Otherwise, drive `LED = 0`.
+4. In `main()`, gradually increment and decrement `duty` between 0 and 20 to create a smooth breathing fade effect.
 
 ## 7. Inference / Conclusion
-- Successfully generated software PWM on 8051 GPIO bit `P1.0`.
-- The human eye integrates the 200 Hz pulses as varying average brightness proportional to duty cycle.
-- Smooth fading without flicker confirms effective time-slicing software PWM.
+- Generated an interrupt-driven PWM signal at ~500 Hz with 5% duty cycle resolution (20 discrete levels).
+- Because the timing is handled inside Timer 0 ISR, the main loop is free to handle other tasks without causing LED flicker.

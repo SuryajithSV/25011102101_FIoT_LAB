@@ -10,11 +10,11 @@
 ---
 
 ## 1. Overview
-This repository contains my experimental implementations, circuit schematics, source code, and project files for the Fundamentals of IoT laboratory coursework at Shiv Nadar University, Chennai.
+This repository contains my lab work, circuit diagrams, code, and project files for the Fundamentals of IoT course at Shiv Nadar University, Chennai.
 
-The coursework spans two embedded hardware computing tiers:
-1. **8-bit Classical Embedded (8051):** Bare-metal register programming on the AT89S52 using Keil C51, covering GPIO operations, hardware timers, software PWM, full-duplex UART, HD44780 LCD drivers, and matrix keypad scanning.
-2. **32-bit ARM Cortex-M (STM32):** Peripheral interfacing with the STM32F103 (Blue Pill) and STM32F401 (Nucleo-64) using STM32CubeMX and HAL, including contact debouncing, serial command interpreters, ESP8266 Wi-Fi AT modems, Bosch BME280 I²C environmental sensing, embedded HTTP servers, and MQTT telemetry to Node-RED.
+The exercises are organized across two hardware platforms:
+1. **8051 (AT89S52):** Register-level programming in Keil C51 covering GPIO pin control, hardware timer delays, software PWM fading, UART serial communication, 16x2 HD44780 LCD interfacing, and 4x4 matrix keypads.
+2. **STM32 (STM32F103 Blue Pill & STM32F401 Nucleo-64):** Firmware development in Keil MDK-ARM with STM32CubeMX HAL, covering button debouncing, serial CLI commands, ESP8266 Wi-Fi AT commands, I2C sensor interfacing with BME280, local HTTP web server hosting, and cloud MQTT telemetry with Node-RED dashboards.
 
 ---
 
@@ -22,7 +22,7 @@ The coursework spans two embedded hardware computing tiers:
 
 Below is the index of all continuous evaluation assignments across both platforms. Each task folder contains its standalone `README.md`, circuit schematic (`circuit.png`), and complete project/source files:
 
-### 8051 Microcontroller Tier (AT89S52)
+### 8051 Microcontroller (AT89S52)
 
 | Category Folder | Task Folder | Experiment Title | Hardware Peripherals | Task Documentation |
 |---|---|---|---|:---:|
@@ -48,7 +48,7 @@ Below is the index of all continuous evaluation assignments across both platform
 
 ---
 
-### STM32 ARM Cortex-M Tier (STM32F103 / STM32F401)
+### STM32 ARM Cortex-M (STM32F103 & STM32F401)
 
 | Category Folder | Task Folder | Experiment Title | Hardware Peripherals | Task Documentation |
 |---|---|---|---|:---:|

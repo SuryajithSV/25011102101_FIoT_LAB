@@ -1,13 +1,13 @@
-# CAT 10 - TASK10B: AT Command Exploration
+# CAT 10 - Task 10B: Wi-Fi Station Mode & AP Scan
 
 ## 1. Experiment Name
-**STM32F103 + ESP8266 Wi-Fi Module: ESP8266 Wi-Fi Mode Setup & Network Discovery**
+**ESP8266 Wi-Fi Station Setup & Access Point Discovery**
 
 ## 2. Hardware Setup and Components
 - 1x STM32 Blue Pill Board (STM32F103C8T6)
-- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos)
-- 1x Dedicated 3.3V 500mA Power Regulator (AMS1117-3.3)
-- 1x USB-to-UART Adapter for PC Debug Monitor
+- 1x ESP8266 Wi-Fi Module (ESP-01 / Wemos D1 Mini)
+- 1x 3.3V Voltage Regulator Board
+- 1x USB-TTL Adapter connected to PA9/PA10
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
@@ -15,25 +15,22 @@
 ## 4. Required Pin Connections
 | STM32 Pin | Connected To | Function |
 |---|---|---|
-| PA2 (USART2 TX) | ESP8266 RXD | Transmit AT commands to ESP8266 |
-| PA3 (USART2 RX) | ESP8266 TXD | Receive responses from ESP8266 |
-| PA9 (USART1 TX) | USB-UART RXD | PC Debug Console output |
-| PA10 (USART1 RX) | USB-UART TXD | PC Debug Console input |
-| +3.3V / GND | ESP8266 VCC / GND | Operating Power (Dedicated supply) |
+| PA2 (USART2 TX) | ESP8266 RXD | Send AT commands |
+| PA3 (USART2 RX) | ESP8266 TXD | Receive responses |
+| PA9 (USART1 TX) | USB-TTL RXD | Debug console |
+| PA10 (USART1 RX) | USB-TTL TXD | Debug input |
+| 3.3V / GND | Power Source | Module power |
 
 ## 5. Clock Configuration
 - System Clock: **72 MHz**
-- USART1 (Debug): 115200 baud, 8-N-1
-- USART2 (Modem): 115200 baud, 8-N-1
+- Serial Baud: **115200 bps**
 
 ## 6. Pseudocode / Code Logic
-1. Initialize USART1 (PC console) and USART2 (ESP8266 modem).
-2. Execute command sequence for TASK10B:
-   - Send AT command string via USART2.
-   - Wait for response (`"OK"`, `"+IPD"`, etc.).
-   - Forward status messages to PC terminal via USART1.
-3. Handle communication state machine and data transfer.
+1. Transmit `AT+CWMODE=1\r\n` over USART2 to set the ESP8266 into Station (client) mode.
+2. Confirm receipt of `OK` response.
+3. Transmit `AT+CWLAP\r\n` to initiate a Wi-Fi scan of nearby access points.
+4. Stream incoming network lists (+CWLAP rows with SSID, RSSI, MAC) directly through to USART1 for inspection on the PC serial monitor.
 
 ## 7. Inference / Conclusion
-- Successfully verified ESP8266 Wi-Fi Mode Setup & Network Discovery on STM32 using AT command protocols over hardware USART.
-- Demonstrates embedded Wi-Fi connectivity and TCP/IP networking on resource-constrained microcontrollers.
+- Successfully set the Wi-Fi mode to Station mode (`CWMODE=1`).
+- The scan detected and displayed nearby access points with their respective signal strengths on the terminal.
