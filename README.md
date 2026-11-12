@@ -65,11 +65,7 @@ Below is the index of all continuous evaluation assignments across both platform
 | [STM32/CAT12](STM32/CAT12/) | [TASK12A](STM32/CAT12/TASK12A/) | Bosch Sensortec BME280 I²C Environmental Sensor Driver | I2C1 (PB8/PB9), BME280 Sensor | [README](STM32/CAT12/TASK12A/README.md) |
 | [STM32/CAT12](STM32/CAT12/) | [TASK12B](STM32/CAT12/TASK12B/) | Dynamic JSON Environmental Telemetry Formatter | I2C1 Sensor, Floating-Point Formatter | [README](STM32/CAT12/TASK12B/README.md) |
 | [STM32/CAT12](STM32/CAT12/) | [TASK12C](STM32/CAT12/TASK12C/) | Live HTTP Telemetry Service & Node-RED Flow Ingestion | Port 80 HTTP, Node-RED Dashboard | [README](STM32/CAT12/TASK12C/README.md) |
-| [STM32/CAT13](STM32/CAT13/) | [TASK13](STM32/CAT13/TASK13/) | Cloud MQTT Telemetry (`broker.emqx.io:1883`) & Subscriptions | ESPLib Driver, USART2 Modem | [README](STM32/CAT13/TASK13/README.md) |
-| [STM32/CAT13](STM32/CAT13/) | [TASK13A](STM32/CAT13/TASK13A/) | MQTT Broker TCP Handshake & Client Connect | USART2 AT Driver, Client ID Handshake | [README](STM32/CAT13/TASK13A/README.md) |
-| [STM32/CAT13](STM32/CAT13/) | [TASK13B](STM32/CAT13/TASK13B/) | Periodic Sensor Telemetry Publishing | MQTT JSON Formatter, QoS 0 Pub | [README](STM32/CAT13/TASK13B/README.md) |
-| [STM32/CAT13](STM32/CAT13/) | [TASK13C](STM32/CAT13/TASK13C/) | Remote Actuator Command Subscription & LED Control | Topic Subscriber, Dispatch Handler | [README](STM32/CAT13/TASK13C/README.md) |
-| [STM32/CAT13](STM32/CAT13/) | [TASK13D](STM32/CAT13/TASK13D/) | Node-RED Real-Time Cloud MQTT Dashboard & Control | Node-RED (Port 1880), MQTT Telemetry | [README](STM32/CAT13/TASK13D/README.md) |
+| [STM32/CAT13](STM32/CAT13/) | [TASK13](STM32/CAT13/TASK13/) | Cloud MQTT Telemetry & Node-RED Dashboard | ESPLib Driver, USART2 Modem, MQTT | [README](STM32/CAT13/TASK13/README.md) |
 
 ---
 
