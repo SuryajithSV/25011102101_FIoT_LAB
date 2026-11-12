@@ -26,9 +26,15 @@ Below is the index of all continuous evaluation assignments across both platform
 
 | Category Folder | Task Folder | Experiment Title | Hardware Peripherals | Task Documentation |
 |---|---|---|---|:---:|
+| [8051/CAT2](8051/CAT2/) | [TASK2A](8051/CAT2/TASK2A/) | 8051 Hardware Bring-Up & Power Supply Verification | AT89S52, 11.0592 MHz XTAL, Reset Circuit | [README](8051/CAT2/TASK2A/README.md) |
 | [8051/CAT2](8051/CAT2/) | [TASK2B](8051/CAT2/TASK2B/) | Bare-Metal LED Blink | P1.0 LED, 11.0592 MHz Crystal | [README](8051/CAT2/TASK2B/README.md) |
-| [8051/CAT3](8051/CAT3/) | [TASK3A](8051/CAT3/TASK3A/) | Switch Polling & LED Chase / Counter / Alternating Patterns | P1.0–P1.3 LEDs, P3.2 Switch | [README](8051/CAT3/TASK3A/README.md) |
+| [8051/CAT2](8051/CAT2/) | [TASK2C](8051/CAT2/TASK2C/) | Modular Millisecond Software Delay Library | Timer/Loop Timing, P1.0 Test Indicator | [README](8051/CAT2/TASK2C/README.md) |
+| [8051/CAT3](8051/CAT3/) | [TASK3A](8051/CAT3/TASK3A/) | Switch Polling & LED Chase / Running LED Pattern | P1.0–P1.3 LEDs, P3.2 Switch | [README](8051/CAT3/TASK3A/README.md) |
+| [8051/CAT3](8051/CAT3/) | [TASK3B](8051/CAT3/TASK3B/) | 4-Bit Binary Up-Counter on LEDs | Port 1 LEDs, P3.2 Switch Input | [README](8051/CAT3/TASK3B/README.md) |
+| [8051/CAT3](8051/CAT3/) | [TASK3C](8051/CAT3/TASK3C/) | Alternating Bitwise LED Flasher (0x55 / 0xAA) | Port 1 LEDs, Software Inversion | [README](8051/CAT3/TASK3C/README.md) |
+| [8051/CAT3](8051/CAT3/) | [TASK3D](8051/CAT3/TASK3D/) | Synchronous All-LED Alert Flash | Port 1 LEDs, 500 ms Period | [README](8051/CAT3/TASK3D/README.md) |
 | [8051/CAT4](8051/CAT4/) | [TASK4A](8051/CAT4/TASK4A/) | 4x4 Keypad Matrix Scan & 7-Segment Display | Port 2 Keypad, Port 0 7-Segment | [README](8051/CAT4/TASK4A/README.md) |
+| [8051/CAT4](8051/CAT4/) | [TASK4B](8051/CAT4/TASK4B/) | 10-Key LED Display Mode Controller | Keypad Input, Multi-Pattern Dispatch | [README](8051/CAT4/TASK4B/README.md) |
 | [8051/CAT5](8051/CAT5/) | [TASK5A](8051/CAT5/TASK5A/) | Hardware Timer 0 Periodic Interrupt (1s Timebase) | Timer 0 Mode 1 (TH0=0xFC, TL0=0x66) | [README](8051/CAT5/TASK5A/README.md) |
 | [8051/CAT5](8051/CAT5/) | [TASK5B/TASK5B.1](8051/CAT5/TASK5B/TASK5B.1/) | Software PWM LED Fading (500 Hz, 0% to 100%) | Timer 1, P1.0 LED | [README](8051/CAT5/TASK5B/TASK5B.1/README.md) |
 | [8051/CAT5](8051/CAT5/) | [TASK5B/TASK5B.2](8051/CAT5/TASK5B/TASK5B.2/) | Variable Frequency Pulse Generation (100 Hz – 5 kHz) | Timer 1, P1.1 Output | [README](8051/CAT5/TASK5B/TASK5B.2/README.md) |
@@ -60,7 +66,12 @@ Below is the index of all continuous evaluation assignments across both platform
 | [STM32/CAT12](STM32/CAT12/) | [TASK12B](STM32/CAT12/TASK12B/) | Dynamic JSON Environmental Telemetry Formatter | I2C1 Sensor, Floating-Point Formatter | [README](STM32/CAT12/TASK12B/README.md) |
 | [STM32/CAT12](STM32/CAT12/) | [TASK12C](STM32/CAT12/TASK12C/) | Live HTTP Telemetry Service & Node-RED Flow Ingestion | Port 80 HTTP, Node-RED Dashboard | [README](STM32/CAT12/TASK12C/README.md) |
 | [STM32/CAT13](STM32/CAT13/) | [TASK13](STM32/CAT13/TASK13/) | Cloud MQTT Telemetry (`broker.emqx.io:1883`) & Subscriptions | ESPLib Driver, USART2 Modem | [README](STM32/CAT13/TASK13/README.md) |
+| [STM32/CAT13](STM32/CAT13/) | [TASK13A](STM32/CAT13/TASK13A/) | MQTT Broker TCP Handshake & Client Connect | USART2 AT Driver, Client ID Handshake | [README](STM32/CAT13/TASK13A/README.md) |
+| [STM32/CAT13](STM32/CAT13/) | [TASK13B](STM32/CAT13/TASK13B/) | Periodic Sensor Telemetry Publishing | MQTT JSON Formatter, QoS 0 Pub | [README](STM32/CAT13/TASK13B/README.md) |
+| [STM32/CAT13](STM32/CAT13/) | [TASK13C](STM32/CAT13/TASK13C/) | Remote Actuator Command Subscription & LED Control | Topic Subscriber, Dispatch Handler | [README](STM32/CAT13/TASK13C/README.md) |
 | [STM32/CAT14](STM32/CAT14/) | [TASK14](STM32/CAT14/TASK14/) | Node-RED Cloud Dashboard & End-Sem IoT Project Integration | Node-RED (Port 1880), MQTT Telemetry | [README](STM32/CAT14/TASK14/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14A](STM32/CAT14/TASK14A/) | Node-RED Telemetry Flow Ingestion & Routing Rule Engine | Flow JSON Parser, MQTT Ingest | [README](STM32/CAT14/TASK14A/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14B](STM32/CAT14/TASK14B/) | Interactive IoT Cloud Web Dashboard & Actuation | Cloud Dashboard, Gauge & Switch UI | [README](STM32/CAT14/TASK14B/README.md) |
 
 ---
 
