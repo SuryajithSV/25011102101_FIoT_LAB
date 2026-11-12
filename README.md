@@ -66,6 +66,7 @@ Below is the index of all continuous evaluation assignments across both platform
 | [STM32/CAT12](STM32/CAT12/) | [TASK12B](STM32/CAT12/TASK12B/) | Dynamic JSON Environmental Telemetry Formatter | I2C1 Sensor, Floating-Point Formatter | [README](STM32/CAT12/TASK12B/README.md) |
 | [STM32/CAT12](STM32/CAT12/) | [TASK12C](STM32/CAT12/TASK12C/) | Live HTTP Telemetry Service & Node-RED Flow Ingestion | Port 80 HTTP, Node-RED Dashboard | [README](STM32/CAT12/TASK12C/README.md) |
 | [STM32/CAT13](STM32/CAT13/) | [TASK13](STM32/CAT13/TASK13/) | Cloud MQTT Telemetry & Node-RED Dashboard | ESPLib Driver, USART2 Modem, MQTT | [README](STM32/CAT13/TASK13/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14](STM32/CAT14/TASK14/) | Cloud MQTT Telemetry & Control with Node-RED Dashboard | USART2 Modem, MQTT Broker, Node-RED Flow | [README](STM32/CAT14/TASK14/README.md) |
 
 ---
 
