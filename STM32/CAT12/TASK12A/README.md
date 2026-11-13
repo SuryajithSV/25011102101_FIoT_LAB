@@ -1,39 +1,55 @@
-# CAT 12 - Task 12A: BME280 I2C Sensor Driver
+# CAT 12 - Task 12A: Nucleo Onboard LED Bring-Up
 
 ## 1. Experiment Name
-**STM32F401 Hardware I2C Interfacing with Bosch BME280 Environmental Sensor**
+**STM32F401RE Nucleo-64 Hardware Bring-Up & Onboard LD2 LED Blink**
 
 ## 2. Hardware Setup and Components
-- 1x STM32 Nucleo-F401RE Board
-- 1x Bosch BME280 Combined Sensor (Temperature, Humidity, Pressure)
-- 4x Jumper wires (3.3V, GND, PB8 SCL, PB9 SDA)
+- 1x STM32 Nucleo-F401RE Development Board (ARM Cortex-M4F with FPU)
+- Onboard Green User LED (LD2 connected to PA5)
+- Onboard ST-Link V2-1 Debugger
+- Mini-USB Cable & Keil MDK-ARM IDE
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
 ## 4. Required Pin Connections
-| Nucleo Pin | BME280 Pin | Function |
+| Nucleo Pin | Target Component | Function |
 |---|---|---|
-| PB8 (D15) | SCL | I2C1 Serial Clock line |
-| PB9 (D14) | SDA | I2C1 Serial Data line |
-| +3.3V | VCC | Sensor Power (3.3V DC) |
-| GND | GND | System Ground |
+| PA5 | Onboard Green LED (LD2) | Active-HIGH digital output |
+| PC13 | Blue User Push-Button (B1) | Digital input (Active-LOW) |
+| PA2 / PA3 | ST-Link Virtual COM Port | USART2 TX / RX debug link |
+| +3.3V / GND | Onboard Power Rails | Power Supply |
 
 ## 5. Clock Configuration
-- System Clock: **84 MHz**
-- I2C1 Clock Speed: **100 kHz (Standard Mode)**
-- APB1 Clock: 42 MHz
+- Clock Source: **Internal 16 MHz RC (HSI) with PLL**
+- System Clock: **SYSCLK = 84 MHz**
+- AHB Bus: 84 MHz (HCLK)
+- APB1 Bus: 42 MHz (PCLK1)
+- APB2 Bus: 84 MHz (PCLK2)
 
 ## 6. Pseudocode / Code Logic
-1. Initialize I2C1 on PB8 / PB9 at 100 kHz.
-2. Read Chip ID from register `0xD0`: verify expected response `0x60`.
-3. Read factory trimming parameters (calibration coefficients) from ROM.
-4. Configure sensor: `ctrl_hum = 0x01` (1x oversampling), `ctrl_meas = 0x27` (normal mode).
-5. In loop:
-   - Read raw burst data (registers `0xF7` to `0xFE`).
-   - Compute compensated temperature (°C), humidity (%RH), and pressure (hPa) using Bosch compensation formulas.
-   - Delay 1000 ms between samples.
+1. Initialize HAL library and configure system clocks to 84 MHz.
+2. Initialize `PA5` as Push-Pull Output (`GPIO_MODE_OUTPUT_PP`, `GPIO_SPEED_FREQ_LOW`).
+3. In main loop:
+   - Toggle PA5: `HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);`
+   - Delay 500 ms: `HAL_Delay(500);`
+
+```c
+#include "main.h"
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+
+    while (1) {
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+        HAL_Delay(500);
+    }
+}
+```
 
 ## 7. Inference / Conclusion
-- Successfully verified hardware I2C communication between STM32F401 and BME280.
-- Proper trimming coefficient readout produces accurate physical temperature, humidity, and barometric pressure readings.
+- Successfully verified hardware bring-up and toolchain operation for the STM32F401RE Nucleo board.
+- Unlike the Blue Pill's active-LOW LED, the Nucleo LD2 is active-HIGH (lights up when PA5 is driven HIGH).
+- Complete Keil uVision project and STM32CubeMX `.ioc` configuration preserved and tested.

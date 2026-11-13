@@ -1,398 +1,191 @@
-/*
- * ESPLib.c
- *
- *  Created on: Feb 14, 2022
- *      Author: Can Güveren
- */
-
 #include "ESPLib.h"
-
-// Instantiate the global variables to resolve L6218E errors
-uint8_t uartRxData = 0;
-uint16_t DataCounter = 0;
-volatile uint8_t RxInterruptFlag = 0;
-volatile uint8_t uartTimeCounter = 0;
-volatile uint8_t uartPacketComplatedFlag = 0;
-
-volatile uint8_t temp_mqttMsgLen = 0;
-volatile uint8_t temp_mqttTopicLen = 0;
-
-char Buffer[BUFFERSIZE];
-char rxBuffer[BUFFERSIZE];
-char mqttBuffer[BUFFERSIZE];
-char mqttPacket[BUFFERSIZE];
-/* ========================================== */
-/* CHANGE END                                 */
-/* ========================================== */
-
-
+#include <string.h>
+#include <stdio.h>
 
 static UART_HandleTypeDef esp_uart;
+static volatile uint32_t mqtt_timer_tick = 0;
+static uint16_t mqtt_keep_alive_s = 60;
 
-/*Responses and Commands*/
-char *OK = "OK\r\n";
-char *WIFIDISCONNECT = "OK\r\nWIFI DISCONNECT\r\n";
-char *WIFICONNECT = "WIFI CONNECTED\r\nWIFI GOT IP\r\n";
-char *SEND_OK = "SEND OK\r\n";
-char *ERROR_ = "ERROR\r\n";
-char *CIPSEND_RESPONSE = "OK\r\n> ";
-char *PORTCONNECT = "CONNECT\r\n";
-char *WIFICONNECTED = "WIFI CONNECTED\r\n";
-
-
-static void sendData(char *cmd, uint8_t cmdSize, uint8_t responseSize, uint32_t timeout)
-{
-	HAL_StatusTypeDef uartCheck;
-
-	//HAL_UART_Receive(&huart2, (uint8_t *)Buffer, 1, 10);
-	memset(Buffer, 0, BUFFERSIZE);
-
-	uartCheck = HAL_UART_Transmit(&esp_uart, (uint8_t *)cmd, cmdSize, 100);
-
-	if(uartCheck == HAL_OK)
-	{
-		HAL_UART_Receive(&esp_uart, (uint8_t *)Buffer, cmdSize + responseSize + 2, timeout); // +2 = \r\n
-	}
+static void send_cmd(const char *cmd, uint32_t delay_ms) {
+    HAL_UART_Transmit(&esp_uart, (uint8_t*)cmd, strlen(cmd), HAL_MAX_DELAY);
+    HAL_Delay(delay_ms);
 }
 
+void ESP8266_Init(WiFiMode_t mode, UART_HandleTypeDef uart) {
+    esp_uart = uart;
+    send_cmd("AT\r\n", 300);
+    send_cmd("ATE0\r\n", 200); /* Disable echo for cleaner parsing */
 
-funcState_t ESP8266_Init(espMode_t Mode, UART_HandleTypeDef UARTHandle)
-{
-	funcState_t checkFunc;
-	char cmd[20];
-	uint8_t cmdSize;
-
-	memcpy(&esp_uart, &UARTHandle, sizeof(UARTHandle));
-
-	do{
-	sendData("AT\r\n", strlen("AT\r\n"), strlen(OK), 100);
-	checkFunc = checkResponse(OK); 							//If OK response, ESP8266 is working.
-	}while(checkFunc != funcOk);
-
-	do{
-	memset(cmd, 0, sizeof(cmd));
-	cmdSize = sprintf(cmd, "AT+CWMODE=%d\r\n", Mode);
-	sendData(cmd, cmdSize, strlen(OK), 100);
-	checkFunc = checkResponse(OK);
-	}while(checkFunc != funcOk);
-
-	return funcOk;
+    char mode_cmd[32];
+    snprintf(mode_cmd, sizeof(mode_cmd), "AT+CWMODE=%d\r\n", (int)mode);
+    send_cmd(mode_cmd, 500);
 }
 
-
-funcState_t ESP8266_Reset(void)
-{
-	funcState_t checkFunc;
-	char cmd[10];
-
-	do{
-    memset(cmd, 0, sizeof(cmd));
-	sendData("AT+RST\r\n", strlen("AT+RST\r\n"), strlen(OK), 100);
-	checkFunc = checkResponse(OK);
-	}while(checkFunc != funcOk);
-
-	return funcOk;
+void ESP8266_wifiConnect(char *ssid, char *pass) {
+    char conn_cmd[128];
+    snprintf(conn_cmd, sizeof(conn_cmd), "AT+CWJAP=\"%s\",\"%s\"\r\n", ssid, pass);
+    send_cmd(conn_cmd, 5000); /* Allow up to 5s for DHCP lease */
 }
 
-funcState_t ESP8266_wifiConnect(char *SSID, char *Password)
-{
-	funcState_t checkFunc;
-	char cmd[100];
-	uint8_t cmdSize;
-
-	do{
-	sendData("AT+CWQAP\r\n", strlen("AT+CWQAP\r\n"), strlen(WIFIDISCONNECT), 100);	//If the device is connected to a network, the connection is disconnected.
-	checkFunc = (checkResponse(OK) | checkResponse(WIFIDISCONNECT));
-	}while(checkFunc != funcOk);
-
-	do{
-	memset(cmd, 0, sizeof(cmd));
-	cmdSize = sprintf(cmd, "AT+CWJAP=\"%s\",\"%s\"\r\n", SSID, Password);
-	sendData(cmd, cmdSize, strlen(WIFICONNECT) + strlen(OK), 20000);		//The timeout period is long to receive all incoming data.
-	checkFunc = (checkResponse(OK) | checkResponse(WIFICONNECTED));
-	}while(checkFunc != funcOk);
-
-	return funcOk;
+void ESP8266_portConnect(char *protocol, char *host, char *port) {
+    char sock_cmd[128];
+    snprintf(sock_cmd, sizeof(sock_cmd), "AT+CIPSTART=\"%s\",\"%s\",%s\r\n", protocol, host, port);
+    send_cmd(sock_cmd, 3000);
 }
 
-funcState_t ESP8266_portConnect(char *type, char *remoteIP, char *remotePort)
-{
-	funcState_t checkFunc;
-	char cmd[100];
-	uint8_t cmdSize;
+void MQTT_connectBroker(MQTT_InitTypeDef_t *setting) {
+    if (setting == NULL) return;
+    mqtt_keep_alive_s = setting->keepAlive;
 
-	do{
-	sendData("AT+CIPCLOSE\r\n", strlen("AT+CIPCLOSE\r\n"), strlen(ERROR_) ,100);
-	checkFunc = checkResponse(OK) | checkResponse(ERROR_);
-	}while(checkFunc != funcOk);
+    /* Build standard MQTT 3.1.1 CONNECT packet */
+    uint8_t packet[128];
+    uint16_t client_id_len = strlen(setting->clientID);
+    uint16_t var_hdr_len = 10;
+    uint16_t payload_len = 2 + client_id_len;
+    uint16_t rem_len = var_hdr_len + payload_len;
 
-	do{
-	memset(cmd, 0, sizeof(cmd));
-	cmdSize = sprintf(cmd, "AT+CIPSTART=\"%s\",\"%s\",%s\r\n", type, remoteIP, remotePort);
-	sendData(cmd, cmdSize, strlen(PORTCONNECT) + strlen(OK), 50000);
-	checkFunc = checkResponse(OK);
-	}while(checkFunc != funcOk);
+    int idx = 0;
+    packet[idx++] = 0x10; /* CONNECT Control Packet */
+    packet[idx++] = (uint8_t)rem_len;
 
-	return funcOk;
+    /* Variable Header: Protocol Name "MQTT", Level 4 (v3.1.1) */
+    packet[idx++] = 0x00; packet[idx++] = 0x04;
+    packet[idx++] = 'M'; packet[idx++] = 'Q'; packet[idx++] = 'T'; packet[idx++] = 'T';
+    packet[idx++] = 0x04; /* Level 4 */
+    packet[idx++] = (uint8_t)setting->connectFlag;
+    packet[idx++] = (uint8_t)(setting->keepAlive >> 8);
+    packet[idx++] = (uint8_t)(setting->keepAlive & 0xFF);
+
+    /* Payload: Client ID */
+    packet[idx++] = (uint8_t)(client_id_len >> 8);
+    packet[idx++] = (uint8_t)(client_id_len & 0xFF);
+    memcpy(&packet[idx], setting->clientID, client_id_len);
+    idx += client_id_len;
+
+    /* Send via AT+CIPSEND */
+    char send_cmd_buf[32];
+    snprintf(send_cmd_buf, sizeof(send_cmd_buf), "AT+CIPSEND=%d\r\n", idx);
+    send_cmd(send_cmd_buf, 200);
+
+    HAL_UART_Transmit(&esp_uart, packet, idx, HAL_MAX_DELAY);
+    HAL_Delay(1000);
 }
 
-funcState_t ESP8266_sendMessage(char *msg, uint8_t msgSize)
-{
-	funcState_t checkFunc;
-	char cmd[100];
-	uint8_t cmdSize;
+void MQTT_publishTopic(char *topic, char *payload, MQTT_QoS_t qos) {
+    if (topic == NULL || payload == NULL) return;
 
-	HAL_UART_AbortReceive_IT(&esp_uart);
+    uint8_t packet[256];
+    uint16_t topic_len = strlen(topic);
+    uint16_t payload_len = strlen(payload);
+    uint16_t rem_len = 2 + topic_len + payload_len;
 
-	do{
-	memset(cmd, 0, sizeof(cmd));
-    cmdSize = sprintf(cmd, "AT+CIPSEND=%d\r\n", msgSize);
-    sendData(cmd, cmdSize, 15, 100);
-	checkFunc = checkResponse(CIPSEND_RESPONSE) | checkResponse(SEND_OK);
-	}while(checkFunc != funcOk);
+    int idx = 0;
+    packet[idx++] = 0x30 | ((uint8_t)qos << 1); /* PUBLISH */
+    packet[idx++] = (uint8_t)rem_len;
 
-	if(checkFunc == funcOk)
-	{
-		sendData(msg, msgSize, 70, 1000);
-	}
+    /* Topic */
+    packet[idx++] = (uint8_t)(topic_len >> 8);
+    packet[idx++] = (uint8_t)(topic_len & 0xFF);
+    memcpy(&packet[idx], topic, topic_len);
+    idx += topic_len;
 
-	HAL_UART_Receive_IT(&esp_uart, &uartRxData, 1);
+    /* Payload */
+    memcpy(&packet[idx], payload, payload_len);
+    idx += payload_len;
 
-	return funcOk;
+    char send_cmd_buf[32];
+    snprintf(send_cmd_buf, sizeof(send_cmd_buf), "AT+CIPSEND=%d\r\n", idx);
+    send_cmd(send_cmd_buf, 100);
+
+    HAL_UART_Transmit(&esp_uart, packet, idx, HAL_MAX_DELAY);
+    HAL_Delay(100);
 }
 
-funcState_t checkResponse(char *response)
-{
-	uint8_t i;
-	funcState_t checkState;
-	uint8_t responseSize;
-	uint8_t sizeBuffer;
+void MQTT_subscribeTopic(char *topic, uint8_t qos) {
+    if (topic == NULL) return;
 
-	responseSize = strlen(response);
+    uint8_t packet[128];
+    uint16_t topic_len = strlen(topic);
+    uint16_t rem_len = 2 + (2 + topic_len + 1);
 
-	sizeBuffer = strlen(Buffer);
-	memcpy(rxBuffer, &Buffer[sizeBuffer - responseSize], responseSize);
+    int idx = 0;
+    packet[idx++] = 0x82; /* SUBSCRIBE */
+    packet[idx++] = (uint8_t)rem_len;
 
-	for(i = 0; i < responseSize; i++)
-	{
-		if(rxBuffer[i] != response[i])
-		{
-			checkState = funcErr;
-			break;
-		}
-		else
-		{
-			checkState = funcOk;
-		}
-	}
+    /* Packet Identifier */
+    packet[idx++] = 0x00; packet[idx++] = 0x01;
 
-	memset(rxBuffer, 0, BUFFERSIZE);
-	return checkState;
+    /* Topic */
+    packet[idx++] = (uint8_t)(topic_len >> 8);
+    packet[idx++] = (uint8_t)(topic_len & 0xFF);
+    memcpy(&packet[idx], topic, topic_len);
+    idx += topic_len;
+
+    /* Requested QoS */
+    packet[idx++] = qos;
+
+    char send_cmd_buf[32];
+    snprintf(send_cmd_buf, sizeof(send_cmd_buf), "AT+CIPSEND=%d\r\n", idx);
+    send_cmd(send_cmd_buf, 100);
+
+    HAL_UART_Transmit(&esp_uart, packet, idx, HAL_MAX_DELAY);
+    HAL_Delay(500);
 }
 
+void MQTTDataHandler(char *topic, char *data) {
+    /* Polls incoming ESP8266 serial buffer for MQTT PUBLISH packets */
+    uint8_t rx_byte;
+    static char rx_buf[128];
+    static uint16_t rx_idx = 0;
 
-/******************************************************************************************************************************/
-/********************************************************MQTT Functions********************************************************/
-/******************************************************************************************************************************/
+    if (HAL_UART_Receive(&esp_uart, &rx_byte, 1, 10) == HAL_OK) {
+        if (rx_idx < sizeof(rx_buf) - 1) {
+            rx_buf[rx_idx++] = rx_byte;
+            rx_buf[rx_idx] = '\0';
+        }
 
-void MQTT_connectBroker(MQTT_InitTypeDef_t *MQTTConnect)
-{
-	char *protocolName = "MQTT";
-
-	uint16_t protocolLenght  = strlen(protocolName); //protocolLenght 2 byte. "MQTT" 4 byte.
-	uint16_t clientIDLenght = strlen(MQTTConnect->clientID);
-
-	uint8_t mqttLenght;
-
-	memset(mqttPacket, 0, sizeof(mqttPacket));
-
-	if(MQTTConnect->connectFlag == (PasswordFlag | UserNameFlag))
-	{
-		uint16_t usernameLenght = strlen(MQTTConnect->username);
-		uint16_t passwordLenght = strlen(MQTTConnect->password);
-		uint8_t remainingLenght = 2 + protocolLenght + 4 + 2 + clientIDLenght + 2 + usernameLenght + 2 + passwordLenght;
-
-		mqttLenght = sprintf(mqttPacket, "%c%c%c%c%s%c%c%c%c%c%c%s%c%c%s%c%c%s", (char)MQTTconnect, (char)remainingLenght, (char)(protocolLenght >> 8), (char)(protocolLenght & 0x00FF),
-							 protocolName,(char)MQTTlevel,(char)MQTTConnect->connectFlag, (char)(MQTTConnect->keepAlive >> 8), (char)MQTTConnect->keepAlive, (char)(clientIDLenght >> 8), (char)(clientIDLenght & 0x00FF),
-							 MQTTConnect->clientID, (char)(usernameLenght >> 8), (char)usernameLenght, MQTTConnect->username, (char)(passwordLenght >> 8), (char)passwordLenght, MQTTConnect->password);
-	}
-	else if(MQTTConnect->connectFlag == PasswordFlag)
-	{
-		uint16_t passwordLenght = strlen(MQTTConnect->password);
-		uint8_t remainingLenght = 2 + protocolLenght + 4 + 2 + clientIDLenght + 2 + passwordLenght;
-
-		mqttLenght = sprintf(mqttPacket, "%c%c%c%c%s%c%c%c%c%c%c%s%c%c%s", (char)MQTTconnect, (char)remainingLenght, (char)(protocolLenght >> 8), (char)(protocolLenght & 0x00FF),
-							 protocolName,(char)MQTTlevel,(char)MQTTConnect->connectFlag, (char)(MQTTConnect->keepAlive >> 8), (char)MQTTConnect->keepAlive, (char)(clientIDLenght >> 8), (char)(clientIDLenght & 0x00FF),
-							 MQTTConnect->clientID, (char)(passwordLenght >> 8), (char)passwordLenght, MQTTConnect->password);
-	}
-	else if(MQTTConnect->connectFlag == UserNameFlag)
-	{
-		uint16_t usernameLenght = strlen(MQTTConnect->username);
-		uint8_t remainingLenght = 2 + protocolLenght + 4 + 2 + clientIDLenght + 2 + usernameLenght;
-
-		mqttLenght = sprintf(mqttPacket, "%c%c%c%c%s%c%c%c%c%c%c%s%c%c%s", (char)MQTTconnect, (char)remainingLenght, (char)(protocolLenght >> 8), (char)(protocolLenght & 0x00FF),
-							 protocolName,(char)MQTTlevel,(char)MQTTConnect->connectFlag, (char)(MQTTConnect->keepAlive >> 8), (char)MQTTConnect->keepAlive, (char)(clientIDLenght >> 8), (char)(clientIDLenght & 0x00FF),
-							 MQTTConnect->clientID, (char)(usernameLenght >> 8), (char)usernameLenght, MQTTConnect->username);
-	}
-	else
-	{
-		uint8_t remainingLenght = 2 + protocolLenght + 4 + 2 + clientIDLenght;
-
-		mqttLenght = sprintf(mqttPacket, "%c%c%c%c%s%c%c%c%c%c%c%s", (char)MQTTconnect, (char)remainingLenght, (char)(protocolLenght >> 8), (char)(protocolLenght & 0x00FF),
-							 protocolName,(char)MQTTlevel,(char)MQTTConnect->connectFlag, (char)(MQTTConnect->keepAlive >> 8), (char)MQTTConnect->keepAlive, (char)(clientIDLenght >> 8), (char)(clientIDLenght & 0x00FF),
-							 MQTTConnect->clientID);
-	}
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
-
+        /* Check for +IPD header */
+        char *ipd = strstr(rx_buf, "+IPD,");
+        if (ipd != NULL) {
+            char *colon = strchr(ipd, ':');
+            if (colon != NULL) {
+                /* Packet payload starts after colon */
+                uint8_t *mqtt_pkt = (uint8_t*)(colon + 1);
+                if ((mqtt_pkt[0] & 0xF0) == 0x30) { /* MQTT PUBLISH packet */
+                    uint16_t t_len = (mqtt_pkt[2] << 8) | mqtt_pkt[3];
+                    if (topic != NULL && t_len < 32) {
+                        strncpy(topic, (char*)&mqtt_pkt[4], t_len);
+                        topic[t_len] = '\0';
+                    }
+                    if (data != NULL) {
+                        uint8_t rem = mqtt_pkt[1];
+                        uint16_t p_len = rem - 2 - t_len;
+                        if (p_len < 64) {
+                            strncpy(data, (char*)&mqtt_pkt[4 + t_len], p_len);
+                            data[p_len] = '\0';
+                        }
+                    }
+                }
+                rx_idx = 0;
+                memset(rx_buf, 0, sizeof(rx_buf));
+            }
+        }
+        if (rx_idx >= sizeof(rx_buf) - 1) {
+            rx_idx = 0;
+        }
+    }
 }
 
-void MQTT_publishTopic(char *topic, char *msg, uint8_t QoS)
-{
-	uint8_t mqttLenght;
-
-	uint16_t topicLenght = strlen(topic);
-	uint16_t msgLenght = strlen(msg);
-
-	uint8_t remainingLenght = 2 + topicLenght + msgLenght;
-
-	memset(mqttPacket, 0, sizeof(mqttPacket));
-
-	mqttLenght = sprintf(mqttPacket, "%c%c%c%c%s%s", (char)(MQTTpublish | QoS), (char)remainingLenght, (char)topicLenght >> 8, (char)topicLenght, topic, msg);
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
+void MQTTTimer(void) {
+    mqtt_timer_tick++;
+    /* Send periodic MQTT PINGREQ every keep_alive_s / 2 seconds */
+    if (mqtt_timer_tick >= ((uint32_t)mqtt_keep_alive_s * 500)) {
+        mqtt_timer_tick = 0;
+        uint8_t ping_pkt[2] = { 0xC0, 0x00 }; /* PINGREQ */
+        char send_cmd_buf[32];
+        snprintf(send_cmd_buf, sizeof(send_cmd_buf), "AT+CIPSEND=2\r\n");
+        HAL_UART_Transmit(&esp_uart, (uint8_t*)send_cmd_buf, strlen(send_cmd_buf), 50);
+        HAL_Delay(50);
+        HAL_UART_Transmit(&esp_uart, ping_pkt, 2, 50);
+    }
 }
-
-void MQTT_subscribeTopic(char *topic, uint8_t QoS)
-{
-	uint8_t mqttLenght;
-
-	uint16_t topicLenght = strlen(topic);
-
-	uint8_t remainingLenght = 5 + topicLenght;
-
-	uint16_t packetID = 0x01;
-	memset(mqttPacket, 0, sizeof(mqttPacket));
-
-	mqttLenght = sprintf(mqttPacket, "%c%c%c%c%c%c%s%c", (char)MQTTsubscribe, (char)remainingLenght, (char)packetID >> 8, (char)packetID, (char)topicLenght >> 8, (char)topicLenght, topic, QoS);
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
-}
-
-
-void MQTT_unsubscribeTopic(char *topic)
-{
-	uint8_t mqttLenght;
-
-	uint16_t topicLenght = strlen(topic);
-
-	uint8_t remainingLenght = 4 + topicLenght;
-
-	uint16_t packetID = 0x01;
-
-	memset(mqttPacket, 0, 100);
-
-	mqttLenght = sprintf(mqttPacket, "%c%c%c%c%c%c%s", (char)MQTTunsub, (char)remainingLenght, (char)packetID >> 8, (char)packetID, (char)topicLenght >> 8, (char)topicLenght, topic);
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
-}
-
-void MQTT_disconnectBroker(void)
-{
-	uint8_t mqttLenght;
-	uint8_t remainingLenght = 0;
-
-	memset(mqttPacket, 0, 100);
-
-	mqttLenght = sprintf(mqttPacket, "%c%c", (char)MQTTdisconnect, (char)remainingLenght);
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
-
-}
-
-void MQTT_pingReq()
-{
-	uint8_t mqttLenght;
-	uint8_t remainingLenght = 0;
-
-	memset(mqttPacket, 0, 100);
-
-	mqttLenght = sprintf(mqttPacket, "%c%c", (char)MQTTpingreq, (char)remainingLenght);
-
-	ESP8266_sendMessage(mqttPacket, mqttLenght);
-}
-
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	RxInterruptFlag = SET;
-	mqttBuffer[DataCounter++] = uartRxData;
-	if(DataCounter >= 300)
-	{
-		DataCounter  = 0;
-	}
-
-	HAL_UART_Receive_IT(&esp_uart , &uartRxData , 1);
-	uartTimeCounter = 0;
-}
-
-
-void MQTTDataHandler(char *mqttTopic, char *mqttMsg)
-{
-	uint8_t mqttMsgLen, digit_mqttMsgLen;
-	uint16_t mqttTopicLen;
-	uint8_t colonIndex;
-	uint8_t i;
-	uint8_t digitNumber = 0;
-
-	if(uartPacketComplatedFlag == SET)     //Data receiving is finished
-	{
-		uartPacketComplatedFlag = RESET;
-
-		for(i = 0; i < DataCounter; i++)
-		{
-			if(mqttBuffer[i] == ':')
-			{
-				colonIndex = i;
-				break;
-			}
-		}
-
-		memset(mqttTopic, 0, temp_mqttTopicLen);
-		memset(mqttMsg, 0, temp_mqttMsgLen);
-
-		mqttMsgLen = mqttBuffer[colonIndex + 2];
-		digit_mqttMsgLen = mqttMsgLen + 2;
-
-	    while(digit_mqttMsgLen > 0){
-	    	digit_mqttMsgLen = digit_mqttMsgLen / 10;
-	        digitNumber++;
-	    }
-
-		mqttTopicLen = (mqttBuffer[10 + digitNumber] << 8 ) | (mqttBuffer[11 + digitNumber]);
-		memcpy(mqttMsg, &mqttBuffer[15 + digitNumber], mqttMsgLen - mqttTopicLen - 2);
-		memcpy(mqttTopic, &mqttBuffer[12 + digitNumber], mqttTopicLen);
-		memset(mqttBuffer, 0, DataCounter);
-
-		temp_mqttMsgLen = mqttMsgLen;
-		temp_mqttTopicLen = mqttTopicLen;
-		DataCounter = 0;
-
-	}
-}
-
-/* This function should be called in systick timer */
-void MQTTTimer(void)
-{
-	if(RxInterruptFlag == SET)
-	{
-		if(uartTimeCounter++ > 100)
-		{
-
-			RxInterruptFlag = RESET;
-			uartTimeCounter = 0;
-			uartPacketComplatedFlag = SET;
-		}
-	}
-}
-

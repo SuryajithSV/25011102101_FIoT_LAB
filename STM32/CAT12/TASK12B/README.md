@@ -1,12 +1,12 @@
-# CAT 12 - Task 12B: Dynamic JSON Telemetry Formatter
+# CAT 12 - Task 12B: Switch State Remembrance
 
 ## 1. Experiment Name
-**STM32 Embedded JSON Serialization for IoT Cloud Telemetry**
+**STM32F401 Nucleo Button Latch & Persistent State Memory**
 
 ## 2. Hardware Setup and Components
 - 1x STM32 Nucleo-F401RE Board
-- 1x BME280 I2C Sensor Module
-- USB Cable to PC (Virtual COM Port)
+- Onboard Blue Push-Button (PC13, B1)
+- Onboard Green LED (PA5, LD2)
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
@@ -14,24 +14,24 @@
 ## 4. Required Pin Connections
 | Nucleo Pin | Connected To | Function |
 |---|---|---|
-| PB8 / PB9 | BME280 SCL / SDA | I2C sensor bus |
-| PA2 / PA3 | ST-Link VCP | Telemetry stream to PC |
-| +3.3V / GND | Sensor VCC / GND | Power |
+| PC13 | Blue Push-Button B1 | State toggle input (Active-LOW) |
+| PA5 | Green User LED LD2 | Persistent latch indicator |
+| +3.3V / GND | Board Rails | Power |
 
 ## 5. Clock Configuration
-- Clock: **84 MHz**
-- USART2 (VCP): 115200 baud, 8-N-1.
+- System Clock: **84 MHz**
+- SysTick: 1 ms tick for debounce timing.
 
 ## 6. Pseudocode / Code Logic
-1. Read temperature, humidity, and pressure from BME280 driver.
-2. Format values into JSON string:
-   ```c
-   snprintf(json_buf, sizeof(json_buf),
-       "{\"status\":\"success\",\"temperature\":%.2f,\"humidity\":%.2f,\"pressure\":%.2f}\r\n",
-       temp, hum, press);
-   ```
-3. Transmit formatted JSON string over USART2 Virtual COM Port.
-4. Delay 1 second.
+1. State variable `led_state = 0`.
+2. In main loop:
+   - If PC13 is pressed (`GPIO_PIN_RESET`):
+     - Wait 50 ms debounce delay.
+     - If still pressed: toggle `led_state = !led_state`.
+     - Update output: `HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, led_state ? GPIO_PIN_SET : GPIO_PIN_RESET);`
+     - Wait for button release: `while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET);`
+     - Wait 20 ms release debounce.
 
 ## 7. Inference / Conclusion
-- Standardized sensor data into structured JSON, enabling direct interoperability with Node-RED, MQTT brokers, and cloud databases.
+- Successfully implemented persistent state latching without external flip-flop ICs.
+- The LED remembers its state indefinitely between presses.
