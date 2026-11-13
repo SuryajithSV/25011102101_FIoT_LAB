@@ -1,4 +1,4 @@
-# CAT 14: IoT Project - BME280 Environmental Telemetry & OpenWeatherMap Intelligence System
+# CAT 14 - Task 14: IoT Project - BME280 Environmental Telemetry & OpenWeatherMap Intelligence System
 
 **Student Name:** Suryajith S V  
 **Registration Number:** 25011102101  

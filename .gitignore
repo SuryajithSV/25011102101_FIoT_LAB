@@ -38,3 +38,9 @@ Desktop.ini
 .vscode/
 
 # Keep .hex firmware files tracked
+
+# Local archives and extraction scratch
+*.zip
+extracted_resources/
+scratch/
+
