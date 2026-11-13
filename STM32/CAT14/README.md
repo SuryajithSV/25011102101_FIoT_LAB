@@ -1,4 +1,4 @@
-# CAT 14 - Task 14: IoT Project - BME280 Environmental Telemetry & OpenWeatherMap Intelligence System
+# CAT 14: IoT Project - BME280 Environmental Telemetry & OpenWeatherMap Intelligence System
 
 **Student Name:** Suryajith S V  
 **Registration Number:** 25011102101  
@@ -147,3 +147,4 @@ The flow file is provided at [`nodered_weather_comparison_dashboard.json`](noder
 - **Modem Connectivity:** ESP8266 joined the Wi-Fi network and successfully connected to `broker.emqx.io:1883`.
 - **Live Telemetry Stream:** Verified MQTT payloads published at 5-second intervals with $<150\text{ ms}$ round-trip latency.
 - **Node-RED Verification:** The dashboard ingested all MQTT messages and synced with OpenWeatherMap API responses, successfully rendering delta analytics and triggering appropriate comfort advisories.
+

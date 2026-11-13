@@ -1,4 +1,4 @@
-# CAT 13 - Task 13: Cloud MQTT Telemetry & Remote Actuation
+# CAT 13: Cloud MQTT Telemetry & Remote Actuation
 
 ## 1. Experiment Name
 **STM32F401RE & ESP8266 Cloud IoT Integration via MQTT Protocol & Node-RED**
