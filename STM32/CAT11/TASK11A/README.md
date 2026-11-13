@@ -1,39 +1,55 @@
-# CAT 11 - Task 11A: ESP8266 TCP Server Configuration
+# CAT 11 - Task 1: Nucleo Onboard LED Bring-Up
 
 ## 1. Experiment Name
-**ESP8266 Multi-Connection Mode & Port 80 TCP Server Setup**
+**STM32F401RE Nucleo-64 Hardware Bring-Up & Onboard LD2 LED Blink**
 
 ## 2. Hardware Setup and Components
-- 1x STM32 Blue Pill Board (STM32F103C8T6)
-- 1x ESP8266 Wi-Fi Module (Wemos D1 Mini / ESP-01)
-- 1x Dedicated 3.3V Power Supply
-- Host PC / USB-TTL Adapter for debug console
+- 1x STM32 Nucleo-F401RE Development Board (ARM Cortex-M4F with FPU)
+- Onboard Green User LED (LD2 connected to PA5)
+- Onboard ST-Link V2-1 Debugger
+- Mini-USB Cable & Keil MDK-ARM IDE
 
 ## 3. Circuit Diagram
 ![Circuit Diagram](circuit.png)
 
 ## 4. Required Pin Connections
-| STM32 Pin | Connected To | Function |
+| Nucleo Pin | Target Component | Function |
 |---|---|---|
-| PA2 (USART2 TX) | ESP8266 RXD | Send AT commands |
-| PA3 (USART2 RX) | ESP8266 TXD | Receive AT responses |
-| PA9 (USART1 TX) | USB-TTL RXD | Serial debug monitor |
-| PA10 (USART1 RX) | USB-TTL TXD | Serial debug input |
-| 3.3V / GND | Power Source | Power rails |
+| PA5 | Onboard Green LED (LD2) | Active-HIGH digital output |
+| PC13 | Blue User Push-Button (B1) | Digital input (Active-LOW) |
+| PA2 / PA3 | ST-Link Virtual COM Port | USART2 TX / RX debug link |
+| +3.3V / GND | Onboard Power Rails | Power Supply |
 
 ## 5. Clock Configuration
-- System Clock: **72 MHz**
-- Serial Baud Rate: **115200 bps**
+- Clock Source: **Internal 16 MHz RC (HSI) with PLL**
+- System Clock: **SYSCLK = 84 MHz**
+- AHB Bus: 84 MHz (HCLK)
+- APB1 Bus: 42 MHz (PCLK1)
+- APB2 Bus: 84 MHz (PCLK2)
 
 ## 6. Pseudocode / Code Logic
-1. Initialize USART1 (debug) and USART2 (modem) at 115200 baud.
-2. Confirm modem communication: `AT` -> `OK`.
-3. Set Station mode: `AT+CWMODE=1`.
-4. Connect to Wi-Fi network: `AT+CWJAP="SSID","PASSWORD"`.
-5. Check allocated IP address: `AT+CIFSR`.
-6. Configure multi-connection mode: `AT+CIPMUX=1`.
-7. Start TCP server on port 80: `AT+CIPSERVER=1,80`.
+1. Initialize HAL library and configure system clocks to 84 MHz.
+2. Initialize `PA5` as Push-Pull Output (`GPIO_MODE_OUTPUT_PP`, `GPIO_SPEED_FREQ_LOW`).
+3. In main loop:
+   - Toggle PA5: `HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);`
+   - Delay 500 ms: `HAL_Delay(500);`
+
+```c
+#include "main.h"
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+
+    while (1) {
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+        HAL_Delay(500);
+    }
+}
+```
 
 ## 7. Inference / Conclusion
-- ESP8266 modem successfully establishes Station connection and opens TCP socket listening on port 80.
-- Multi-client mode allows simultaneous browser connections without port conflicts.
+- Successfully verified hardware bring-up and toolchain operation for the STM32F401RE Nucleo board.
+- Unlike the Blue Pill's active-LOW LED, the Nucleo LD2 is active-HIGH (lights up when PA5 is driven HIGH).
+- Complete Keil uVision project and STM32CubeMX `.ioc` configuration preserved and tested.
