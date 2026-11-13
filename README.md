@@ -14,7 +14,7 @@ This repository contains my lab work, circuit diagrams, code, and project files 
 
 The exercises are organized across two hardware platforms:
 1. **8051 (AT89S52):** Register-level programming in Keil C51 covering GPIO pin control, hardware timer delays, software PWM fading, UART serial communication, 16x2 HD44780 LCD interfacing, and 4x4 matrix keypads.
-2. **STM32 (STM32F103 Blue Pill & STM32F401 Nucleo-64):** Firmware development in Keil MDK-ARM with STM32CubeMX HAL, covering button debouncing, serial CLI commands, ESP8266 Wi-Fi AT commands, I2C sensor interfacing with BME280, local HTTP web server hosting, and cloud MQTT telemetry with Node-RED dashboards.
+2. **STM32 (STM32F103 Blue Pill & STM32F401 Nucleo-64):** Firmware development in Keil MDK-ARM with STM32CubeMX HAL, covering button debouncing, serial CLI commands, ESP8266 Wi-Fi AT commands, I2C sensor interfacing with BME280, local HTTP web server hosting, cloud MQTT telemetry, and an end-to-end IoT Capstone Project comparing localized BME280 microclimate telemetry against the OpenWeatherMap API with real-time insights and recommendations on a Node-RED dashboard.
 
 ---
 
@@ -66,6 +66,7 @@ Below is the index of all continuous evaluation assignments across both platform
 | [STM32/CAT12](STM32/CAT12/) | [TASK12B](STM32/CAT12/TASK12B/) | Dynamic JSON Environmental Telemetry Formatter | I2C1 Sensor, Floating-Point Formatter | [README](STM32/CAT12/TASK12B/README.md) |
 | [STM32/CAT12](STM32/CAT12/) | [TASK12C](STM32/CAT12/TASK12C/) | Live HTTP Telemetry Service & Node-RED Flow Ingestion | Port 80 HTTP, Node-RED Dashboard | [README](STM32/CAT12/TASK12C/README.md) |
 | [STM32/CAT13](STM32/CAT13/) | [TASK13](STM32/CAT13/TASK13/) | Cloud MQTT Telemetry & Node-RED Dashboard | ESPLib Driver, USART2 Modem, MQTT | [README](STM32/CAT13/TASK13/README.md) |
+| [STM32/CAT14](STM32/CAT14/) | [TASK14](STM32/CAT14/TASK14/) | IoT Capstone Project: BME280 Telemetry & OpenWeatherMap Intelligence System | STM32F401RE, BME280 (I2C1), ESP8266 (USART1), OpenWeather API, Node-RED | [README](STM32/CAT14/TASK14/README.md) |
 
 ---
 
